@@ -1,30 +1,19 @@
 import Vue from 'vue'
 import App from './App.vue'
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-import Vuetify from "vuetify";
-
+import Vuetify from 'vuetify'
 import "vuetify/dist/vuetify.min.css";
-import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
+import axios from 'axios';
 
-// const opts = {
-//   icons: {
-//     iconfont: "mdi"
-//   }
-// };
-Vue.use(Vuetify);
+Vue.prototype.$http = axios;
 
-
-
-
-
-
-// Make BootstrapVue available throughout your project
-Vue.use(BootstrapVue)
-// Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin)
-Vue.config.productionTip = false
+const opts = {
+  icons: {
+    iconfont: "mdi"
+  }
+};
+Vue.use(Vuetify)
 
 new Vue({
+  vuetify: new Vuetify(opts),
   render: h => h(App),
 }).$mount('#app')
