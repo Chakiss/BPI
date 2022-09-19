@@ -1,6 +1,6 @@
+
 <template>
-  <v-app>
-    <v-content>
+   <v-content>
       <v-row justify="center">
         <v-col cols="8" md="3">
           <p class="subtitle-1">日付取得フィールドサンプル</p>
@@ -23,34 +23,34 @@
         </v-col>
       </v-row>
     </v-content>
-  </v-app>
-</template>
+  </template>
 
 <script>
-// import BPIMain from './components/BPIMain.vue'
-import DatePicker from "./components/DatePicker";
+
+
 
 export default {
-  name: "App",
-  components: {
-    DatePicker,
-    // BPIMain
-  },
-  data() {
-    return {
-      value: null,
-    };
-  },
-};
+    name: 'BPIMain'
+}
 </script>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+
+<style scoped>
+h3 {
+    margin: 40px 0 0;
+}
+
+ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+li {
+    display: inline-block;
+    margin: 0 10px;
+}
+
+a {
+    color: #42b983;
 }
 </style>
