@@ -13,8 +13,10 @@ const opts = {
     iconfont: "mdi"
   }
 };
+
 Vue.use(Vuetify)
-Vue.use(VueQrcodeReader);
+Vue.use(VueQrcodeReader)
+
 new Vue({
   vuetify: new Vuetify(opts),
   render: h => h(App),

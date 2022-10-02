@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "axios": "^0.27.2",
+    "expo-camera": "^12.3.0",
     "vue": "^2.7.10",
     "vue-qrcode-reader": "^3.1.0",
     "vuetify": "2.0.1"

@@ -29,11 +29,8 @@
       <v-row justify="center">
         <v-col cols="8" md="4">
           <label>SO BarCode : </label>
-          <v-text-field v-model="value" outlined dense hide-detai @click="scanQR">
-            <!-- <template v-slot:append-outer> -->
-            <date-picker v-model="value" />
-            <!-- </template> -->
-          </v-text-field>
+          <button name="scanQR" @click="scanQR">Scan QR code</button>
+          <qrcode-stream v-if="isStreamReader" @decode="onDecode"></qrcode-stream>
         </v-col>
       </v-row>
 
@@ -145,18 +142,39 @@
 
 <script>
 import DatePicker from "./components/DatePicker";
+import { QrcodeStream} from 'vue-qrcode-reader'
 
 export default {
+
   name: "App",
-  components: {
-    DatePicker,
-  },
+
   data() {
+   
+
     return {
+      
       value: null,
       orderRels: [],
+
+      isStreamReader: false,
+      soBarCodeResulr: null,
+      
+      
     };
   },
+
+  components: {
+    DatePicker,
+    QrcodeStream,
+    // QrcodeDropZone,
+    // QrcodeCapture,
+
+  },
+
+  mounted: function () {
+
+  },
+
   methods: {
     async getData() {
       try {
@@ -181,8 +199,14 @@ export default {
     },
 
     async scanQR() {
-      console.log("xxxx");
+      this.isStreamReader = true
     },
+
+    onDecode (decodedString) {
+      window.alert(decodedString);
+      this.isStreamReader = false
+    },
+
   },
 
   created() {
@@ -190,3 +214,16 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+button {
+  display: inline-block;
+  background-color: indigo;
+  color: white;
+  padding: 0.5rem;
+  font-family: sans-serif;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+</style>
