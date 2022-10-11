@@ -1,23 +1,20 @@
-import Vue from 'vue'
-import App from './App.vue'
-import Vuetify from 'vuetify'
-import "vuetify/dist/vuetify.min.css";
-import axios from 'axios';
-import VueQrcodeReader from "vue-qrcode-reader";
+import Vue from "vue"
+import App from "./App.vue"
+import router from "./router"
+import store from "./store"
+import vuetify from "./plugins/vuetify"
+import qrcodereader from "./plugins/vue-qrcode-reader"
+import dayjs from "./plugins/dayjs"
+import axios from "./plugins/axios"
 
-
-Vue.prototype.$http = axios;
-
-const opts = {
-  icons: {
-    iconfont: "mdi"
-  }
-};
-
-Vue.use(Vuetify)
-Vue.use(VueQrcodeReader)
+Vue.config.productionTip = false
 
 new Vue({
-  vuetify: new Vuetify(opts),
-  render: h => h(App),
-}).$mount('#app')
+	router,
+	store,
+	vuetify,
+	axios,
+	dayjs,
+	qrcodereader,
+	render: (h) => h(App),
+}).$mount("#app")
