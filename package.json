@@ -5,7 +5,7 @@
 	"scripts": {
 		"serve": "vue-cli-service serve",
 		"build": "vue-cli-service build",
-		"deploy": "firebase deploy --only hosting"
+		"deploy": "yarn build && firebase deploy --only hosting"
 	},
 	"dependencies": {
 		"@mdi/js": "^7.0.96",

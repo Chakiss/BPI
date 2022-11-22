@@ -1,3 +1,13 @@
 <template lang="pug">
-router-view
+v-app
+    LoaderOverlay
+    router-view
 </template>
+
+<script>
+import LoaderOverlay from "@/components/Loader.vue"
+
+export default {
+	components: { LoaderOverlay },
+}
+</script>

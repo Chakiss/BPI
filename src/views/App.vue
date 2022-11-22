@@ -1,21 +1,51 @@
 <template lang="pug">
-v-app
-    v-app-bar(app flat tile color="grey" dark hight="40px")
+v-main(app).primary
+    //- Bar
+    v-app-bar(dark flat tile app height="70px" color="primary darken-1")
+        v-btn(:icon="$vuetify.breakpoint.xsOnly" :outlined="$vuetify.breakpoint.smAndUp" rounded @click="openMenu()")
+            v-icon(:left="$vuetify.breakpoint.smAndUp") {{ mdiDotsGrid }}
+            span(v-if="$vuetify.breakpoint.smAndUp") เมนูหลัก
         v-spacer
-        .text-h6.font-weight-bold POS
+        .text-body-1.font-weight-bold Adeptus Thai Co., Ltd.
         v-spacer
-    v-main(app).grey.lighten-2
-        AppForm
-    v-footer(app height="35px" color="grey lighten-2")
-        .text-caption.text--secondary Copyright&copy;{{ new Date().getFullYear() }}
-        v-spacer
-        .text-caption.text--secondary Powered by Wongsakorn
+        v-btn(:icon="$vuetify.breakpoint.xsOnly" :outlined="$vuetify.breakpoint.smAndUp" rounded @click="reset()")
+            span(v-if="$vuetify.breakpoint.smAndUp") หน้าหลัก
+            v-icon(:right="$vuetify.breakpoint.smAndUp") {{ mdiHomeExportOutline }}
+    //- Menu
+    v-bottom-sheet(v-model="mainMenuVisibility" :inset="$vuetify.breakpoint.smAndUp" content-class="rounded-t-xl overflow-hidden" :max-width="$vuetify.breakpoint.smAndUp ? `450px` : `100%`")
+        v-list
+            v-subheader เมนูหลัก
+            v-list-item(v-for="(item,index) in mainMenuItems" :key="index" :disabled="item.disabled" exact :to="item.option")
+                v-list-item-icon(size="24")
+                    v-icon {{ item.icon || null }}
+                v-list-item-title {{ item.title }}
+                v-list-item-icon(size="14")
+                    v-icon {{ mdiChevronRight }}
+    //- Vuew
+    v-fade-transition(hide-on-leave)
+        router-view
 </template>
 
 <script>
-import AppForm from "@/components/AppForm.vue"
+import { mdiHomeExportOutline, mdiDotsGrid, mdiChevronRight } from "@mdi/js"
 
 export default {
-	components: { AppForm },
+	data: () => ({
+		mdiHomeExportOutline: mdiHomeExportOutline,
+		mdiDotsGrid: mdiDotsGrid,
+		mainMenuVisibility: false,
+		mdiChevronRight: mdiChevronRight,
+	}),
+	computed: {
+		mainMenuItems() {
+			return this.$store.getters["mainMenuItems"] || []
+		},
+	},
+	methods: {
+		openMenu() {
+			this.mainMenuVisibility = true
+		},
+		reset() {},
+	},
 }
 </script>
