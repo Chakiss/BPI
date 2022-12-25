@@ -45,7 +45,10 @@ export default {
 		openMenu() {
 			this.mainMenuVisibility = true
 		},
-		reset() {},
+		reset() {
+			this.$store.dispatch("company/clear")
+			this.$router.push({ name: "home" })
+		},
 	},
 }
 </script>

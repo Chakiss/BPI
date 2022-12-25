@@ -1,7 +1,13 @@
 import Vue from "vue"
 import Vuex from "vuex"
+import VuexPersistence from "vuex-persist"
 import { mdiCash100, mdiTransfer, mdiZipBoxOutline, mdiHandshakeOutline } from "@mdi/js"
 import company from "@/store/company"
+import ship from "@/store/ship"
+
+const vuexLocal = new VuexPersistence({
+	storage: window.localStorage,
+})
 
 Vue.use(Vuex)
 
@@ -36,5 +42,6 @@ export default new Vuex.Store({
 			commit("setLoader", false)
 		},
 	},
-	modules: { company },
+	plugins: [vuexLocal.plugin],
+	modules: { company, ship },
 })

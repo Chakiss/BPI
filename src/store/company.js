@@ -19,6 +19,9 @@ export default {
 		selectedCompanyID(state) {
 			return state.selectedCompanyID
 		},
+		selectedCompanyCode(state) {
+			return state.companies.find((c) => c.id === state.selectedCompanyID)?.code || null
+		},
 		selectedCompanySiteID(state) {
 			return state.selectedCompanySiteID
 		},
@@ -85,6 +88,11 @@ export default {
 		},
 		setInitialized: ({ commit }, value) => {
 			commit("setInitialized", value)
+		},
+		clear({ dispatch }) {
+			dispatch("setSelectedCompanyID", null)
+			dispatch("setSelectedCompanySiteID", null)
+			dispatch("setInitialized", false)
 		},
 	},
 	modules: {},
