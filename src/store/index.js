@@ -2,6 +2,7 @@ import Vue from "vue"
 import Vuex from "vuex"
 import VuexPersistence from "vuex-persist"
 import { mdiCash100, mdiTransfer, mdiZipBoxOutline, mdiHandshakeOutline } from "@mdi/js"
+import auth from "@/store/auth"
 import company from "@/store/company"
 import ship from "@/store/ship"
 
@@ -43,5 +44,5 @@ export default new Vuex.Store({
 		},
 	},
 	plugins: [vuexLocal.plugin],
-	modules: { company, ship },
+	modules: { company, ship, auth },
 })

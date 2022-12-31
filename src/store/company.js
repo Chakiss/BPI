@@ -50,13 +50,13 @@ export default {
 		},
 	},
 	actions: {
-		getCompanies: ({ commit, dispatch }) =>
+		getCompanies: ({ commit, rootGetters, dispatch }) =>
 			new Promise(async (resolve, reject) => {
 				try {
 					dispatch("showLoader", null, { root: true })
 					commit("reset")
 
-					const { value: companies = [] } = await getCompanies()
+					const { value: companies = [] } = await getCompanies(rootGetters["auth/auth"])
 					let items = []
 					for (const company of companies) {
 						const companyIndex = items.findIndex((i) => i.code === company.Company_Company)

@@ -17,7 +17,7 @@ v-main(app).primary
                             v-col(cols="12")
                                 v-select(v-model="selectedCompanySiteID" placeholder="เลือกไซต์" :items="companySites" item-value="id" item-text="title" :prepend-inner-icon="mdiNetworkOutline" solo flat hide-details clearable)
                             v-col(cols="12")
-                                v-text-field(type="text" placeholder="ระบุชื่อผู้ใช้" :prepend-inner-icon="mdiAccountOutline" solo flat hide-details)
+                                v-text-field(:value="username" disabled type="text" placeholder="ระบุชื่อผู้ใช้" :prepend-inner-icon="mdiAccountOutline" solo flat hide-details)
                         v-slide-y-transition
                             .text-center.my-5(v-if="isSubmitable")
                                 v-btn(x-large color="accent" depressed rounded dark min-width="250px" @click="doContinue()") ดำเนินการต่อ
@@ -35,6 +35,9 @@ export default {
 		mdiNetworkOutline: mdiNetworkOutline,
 	}),
 	computed: {
+		username() {
+			return this.$store.getters["auth/username"] || []
+		},
 		companies() {
 			return this.$store.getters["company/companies"] || []
 		},

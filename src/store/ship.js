@@ -15,7 +15,7 @@ export default {
 					const companySiteID = rootGetters["company/selectedCompanySiteID"] || ""
 					dispatch("showLoader", null, { root: true })
 
-					const { value: items = [] } = await getPlanByQRCode(companyCode, companySiteID, QRString)
+					const { value: items = [] } = await getPlanByQRCode(companyCode, companySiteID, QRString, rootGetters["auth/auth"])
 
 					console.log(`[plan][list]`, items)
 
@@ -42,7 +42,7 @@ export default {
 					const companySiteID = rootGetters["company/selectedCompanySiteID"] || ""
 					dispatch("showLoader", null, { root: true })
 
-					const { value: items = [] } = await getSalesOrderByQRCode(companyCode, companySiteID, QRString)
+					const { value: items = [] } = await getSalesOrderByQRCode(companyCode, companySiteID, QRString, rootGetters["auth/auth"])
 
 					console.log(`[sale order][list]`, items)
 
@@ -81,7 +81,7 @@ export default {
 					const companySiteID = rootGetters["company/selectedCompanySiteID"] || ""
 					dispatch("showLoader", null, { root: true })
 
-					const { value: items = [] } = await getSerialByQRCode(companyCode, companySiteID, QRString)
+					const { value: items = [] } = await getSerialByQRCode(companyCode, companySiteID, QRString, rootGetters["auth/auth"])
 
 					console.log(`[serial][list]`, items)
 
@@ -112,7 +112,8 @@ export default {
 						serialPayload.partNumber,
 						serialPayload.wareHouseCode,
 						serialPayload.binNumber,
-						serialPayload.lotNumber
+						serialPayload.lotNumber,
+						rootGetters["auth/auth"]
 					)
 					console.log(`[product][list]`, products)
 
@@ -150,16 +151,8 @@ export default {
 					const companySiteID = rootGetters["company/selectedCompanySiteID"] || ""
 					dispatch("showLoader", null, { root: true })
 
-					const response = await submitEpicor(payload)
+					const response = await submitEpicor(payload, rootGetters["auth/auth"], rootGetters["auth/token"])
 					console.log(response)
-
-					// console.log(`[submit][list]`, items)
-
-					// if (items.length <= 0) throw new Error("ไม่พบ Plan นี้ในระบบ")
-
-					// const item = items[0]
-
-					// console.log(`[submit][done]`, item)
 
 					return resolve(true)
 				} catch (error) {

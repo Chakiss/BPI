@@ -5,7 +5,7 @@ v-main(app).primary
             v-col(cols="11" sm="6" md="5" lg="4" xl="3").text-center
                 .text-body-2.white--text Adeptus Thai Co., Ltd.
                 .text-h1.white--text.mt-3.mb-8 ยินดีต้อนรับ
-                v-btn(x-large color="accent" depressed rounded dark min-width="250px" @click="initialize()") เริ่มใช้งาน
+                v-btn(x-large color="accent" depressed rounded dark min-width="250px" :to="{name:'auth'}") เริ่มใช้งาน
 </template>
 
 <script>
@@ -17,15 +17,5 @@ export default {
 		mdiDomain: mdiDomain,
 		mdiNetworkOutline: mdiNetworkOutline,
 	}),
-	methods: {
-		async initialize() {
-			try {
-				await this.$store.dispatch("company/getCompanies")
-				this.$router.replace({ name: "auth" })
-			} catch (error) {
-				alert(error.message)
-			}
-		},
-	},
 }
 </script>
