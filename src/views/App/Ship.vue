@@ -161,7 +161,6 @@ export default {
 			try {
 				const payload = {
 					Company: this.form.serial?.companyCode,
-					Date01: dayjs(this.form.shippingDate, "YYYY-MM-DD").toISOString(),
 					Key1: this.form.barcodePlan,
 					Key2: this.form.saleOrderSO,
 					Key3: this.form.saleOrderLine,
@@ -170,9 +169,11 @@ export default {
 					ShortChar09: this.form.serial?.wareHouseCode,
 					ShortChar10: this.form.serial?.binNumber,
 					ShortChar11: this.form.serial?.lotNumber,
-					Chracter09: this.form.saleOrderProductName,
-					Number14: this.form.products[0]?.id,
-					ShortChar19: "",
+					Character09: this.form.saleOrderProductName,
+					Number14: 1,
+					Number15: 0,
+					Date01: dayjs(this.form.shippingDate, "YYYY-MM-DD").toISOString(),
+					ShortChar19: this.$store.getters["auth/username"],
 				}
 				const response = await this.$store.dispatch("ship/submitEpicor", payload)
 

@@ -1,4 +1,4 @@
-import { getPlanByQRCode, getSalesOrderByQRCode, getSerialByQRCode, getProductOfSerial, submitEpicor } from "@/libs/api"
+import { getPlanByQRCode, getSalesOrderByQRCode, getSerialByQRCode, getProductOfSerial, submitEpicor, getWarehoseAndBin } from "@/libs/api"
 
 export default {
 	namespaced: true,
@@ -91,6 +91,18 @@ export default {
 
 					console.log(`[serial][done]`, item)
 
+					console.log(`[wh-bin][checking]`)
+
+					const { value: wh_bins = [] } = await getWarehoseAndBin(companyCode, companySiteID, rootGetters["auth/auth"])
+
+					if (wh_bins.length <= 0) throw new Error("ข้อมูลสินค้าไม่ตรง กรุณาตรวจสอบ")
+
+					const wh_bin = wh_bins[0]
+
+					console.log(`[wh-bin][result]`, wh_bin)
+					console.log(`[wh-bin][PlantConfCtrl_DefShipWhse]`, wh_bin.PlantConfCtrl_DefShipWhse)
+					console.log(`[wh-bin][PlantConfCtrl_DefShipBin]`, wh_bin.PlantConfCtrl_DefShipBin)
+
 					const serialPayload = {
 						id: item.RowIdent,
 						quantity: parseFloat(item.Calculated_Number13),
@@ -98,8 +110,8 @@ export default {
 						barcode: item.UD03_Key1,
 						companySiteID: item.UD03_ShortChar20,
 						partNumber: item.UD03_Key2,
-						wareHouseCode: item.UD03_Key3,
-						binNumber: item.UD03_Key4,
+						wareHouseCode: wh_bin.PlantConfCtrl_DefShipWhse,
+						binNumber: wh_bin.PlantConfCtrl_DefShipBin,
 						lotNumber: item.UD03_Key5,
 					}
 

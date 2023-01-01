@@ -16,10 +16,10 @@ export default new Vuex.Store({
 	state: {
 		loader: false,
 		mainMenuItems: [
-			{ icon: mdiCash100, title: "แผนตอกรายวัน", option: { name: "profits" }, disabled: true },
-			{ icon: mdiTransfer, title: "โอนเข็มรอขาย", option: { name: "transfers" }, disabled: true },
+			//{ icon: mdiCash100, title: "แผนตอกรายวัน", option: { name: "profits" }, disabled: true },
+			{ icon: mdiTransfer, title: "โอนเข็มรอขาย", option: { name: "transfers" }, disabled: false },
 			{ icon: mdiZipBoxOutline, title: "ส่งสินค้า", option: { name: "ships" }, disabled: false },
-			{ icon: mdiHandshakeOutline, title: "รับของที่ Site งาน", option: { name: "recieveds" }, disabled: true },
+			//{ icon: mdiHandshakeOutline, title: "รับของที่ Site งาน", option: { name: "recieveds" }, disabled: true },
 		],
 	},
 	getters: {

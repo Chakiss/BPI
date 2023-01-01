@@ -53,6 +53,13 @@ export const getSerialByQRCode = (companyCode, companySiteID, QRCode, auth = {})
 		auth: auth,
 	})
 
+export const getWarehoseAndBin = (companyCode, companySiteID, auth = {}) =>
+	client({
+		url: `/v1/BaqSvc/ADT_INVS-117_DEF_WH-BIN?$filter=PlantConfCtrl_Company eq '${companyCode}'  and PlantConfCtrl_Plant eq '${companySiteID}'`,
+		method: "get",
+		auth: auth,
+	})
+
 export const getProductOfSerial = (companyCode, companySiteID, partNumber, wareHouseCode, binNumber, lotNumber, auth = {}) =>
 	client({
 		url: `/v1/BaqSvc/ADT_CHK_QOH('${companyCode}')?$filter=PartBin_PartNum eq '${partNumber}'and PartBin_WarehouseCode eq '${wareHouseCode}' and PartBin_BinNum eq '${binNumber}' and PartBin_LotNum eq '${lotNumber}' and Warehse_Plant eq '${companySiteID}'`,
@@ -63,7 +70,7 @@ export const getProductOfSerial = (companyCode, companySiteID, partNumber, wareH
 export const submitEpicor = (payload = {}, auth = {}, token = "") =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `/v2/odata/BPI/Ice.BO.UD27Svc/UD27s`,
+		url: `/v2/odata/BPI/Ice.BO.UD27Svc/UD27s?API-Key=gKlnIKnXvROeLbZlz6oZ2Lm7nFfQxotJego9sRLnPbwwH`,
 		method: "post",
 		auth: auth,
 		data: payload,
