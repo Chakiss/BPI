@@ -41,7 +41,7 @@ v-container
 		//- Result (Barcode - Product)
 		v-col(cols="12" sm="4")
 			.text-caption.white--text รหัสสินค้า:
-			v-text-field(type="text" solo flat hide-details readonly)
+			v-text-field(v-model="form.saleOrderProductID" solo flat hide-details readonly)
 		v-col(cols="12")
 			.text-caption.white--text รายการ:
 			v-sheet(width="100%" color="white").rounded-lg.overflow-hidden
@@ -145,10 +145,31 @@ export default {
 		},
 		async productScanned(qrString) {
 			try {
-				const { serial, product } = await this.$store.dispatch("ship/checkSerialByQRCode", qrString)
+				if (this.form.products.some((obj) => obj.barcode == qrString)) {
+					alert("QR Code นี้ถูกสแกนรับค่าแล้ว")
+				} else {
+					const { serial, product, error } = await this.$store.dispatch("ship/checkSerialByQRCode", qrString)
 
-				this.form.serial = serial
-				this.form.products.push(product)
+					console.log("product.partNumber", product.partNumber)
+					console.log("product.lotNumber", product.lotNumber)
+					if (error.length > 0) {
+						alert(error)
+					} else {
+						let checkDuplication = false
+						this.form.products.forEach((p) => {
+							console.log("checking....", p.partNumber, p.lotNumber)
+							if (p.partNumber == product.partNumber && p.lotNumber == product.lotNumber) {
+								console.log("FOUND!!!!")
+								checkDuplication = true
+								p.quantity += 1
+							}
+						})
+						if (checkDuplication == false) {
+							this.form.serial = serial
+							this.form.products.push(product)
+						}
+					}
+				}
 			} catch (error) {
 				this.resetSerialAndProducts()
 
@@ -159,30 +180,58 @@ export default {
 		},
 		async submitEpicor() {
 			try {
-				const payload = {
-					Company: this.form.serial?.companyCode,
-					Key1: this.form.barcodePlan,
-					Key2: this.form.saleOrderSO,
-					Key3: this.form.saleOrderLine,
-					Key4: this.form.saleOrderRel,
-					ShortChar08: this.form.saleOrderProductID,
-					ShortChar09: this.form.serial?.wareHouseCode,
-					ShortChar10: this.form.serial?.binNumber,
-					ShortChar11: this.form.serial?.lotNumber,
-					Character09: this.form.saleOrderProductName,
-					Number14: 1,
-					Number15: 0,
-					Date01: dayjs(this.form.shippingDate, "YYYY-MM-DD").toISOString(),
-					ShortChar19: this.$store.getters["auth/username"],
+				for (const [index, product] of this.form.products.entries()) {
+					const payload = {
+						Company: product.companyCode,
+						Date01: dayjs(this.form.shippingDate, "YYYY-MM-DD").toISOString(),
+						Key1: product.barcode,
+						Key2: this.form.saleOrderSO,
+						Key3: this.form.saleOrderLine,
+						Key4: this.form.saleOrderRel,
+						ShortChar08: this.form.saleOrderProductID,
+						ShortChar09: this.form.wareHouseCode,
+						ShortChar10: this.form.binNumber,
+						ShortChar11: this.form.lotNumber,
+						Character09: this.form.saleOrderProductName,
+						Number14: index + 1,
+						Number15: 0,
+						ShortChar19: this.$store.getters["auth/username"],
+					}
+					const response = await this.$store.dispatch("ship/submitEpicor", payload)
+					//throw new Error("error here")
 				}
-				const response = await this.$store.dispatch("ship/submitEpicor", payload)
-
 				alert("ส่งข้อมูลเรียบร้อยแล้ว")
 				this.resetAll()
 			} catch (error) {
-				alert(error.message)
+				console.error(error)
 			}
 		},
+		//async submitEpicor() {
+		// try {
+		// 	const payload = {
+		// 		Company: this.form.serial?.companyCode,
+		// 		Date01: dayjs(this.form.shippingDate, "YYYY-MM-DD").toISOString(),
+		// 		Key1: this.form.barcodePlan,
+		// 		Key2: this.form.saleOrderSO,
+		// 		Key3: this.form.saleOrderLine,
+		// 		Key4: this.form.saleOrderRel,
+		// 		ShortChar08: this.form.saleOrderProductID,
+		// 		ShortChar09: this.form.serial?.wareHouseCode,
+		// 		ShortChar10: this.form.serial?.binNumber,
+		// 		ShortChar11: this.form.serial?.lotNumber,
+		// 		Character09: this.form.saleOrderProductName,
+		// 		Number14: 1,
+		// 		Number15: 0,
+		// 		ShortChar19: this.$store.getters["auth/username"],
+		// 	}
+		// 	const response = await this.$store.dispatch("ship/submitEpicor", payload)
+
+		// 	alert("ส่งข้อมูลเรียบร้อยแล้ว")
+		// 	this.resetAll()
+		// } catch (error) {
+		// 	alert(error.message)
+		// }
+		//},
 		resetPlan() {
 			this.form.barcodePlan = null
 		},

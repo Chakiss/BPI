@@ -42,6 +42,9 @@ export default new Vuex.Store({
 		hideLoader: ({ commit }) => {
 			commit("setLoader", false)
 		},
+		reset({ dispatch }) {
+			state.mainMenuItems = []
+		},
 	},
 	plugins: [vuexLocal.plugin],
 	modules: { company, ship, auth },

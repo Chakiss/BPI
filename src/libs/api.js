@@ -75,3 +75,12 @@ export const submitEpicor = (payload = {}, auth = {}, token = "") =>
 		auth: auth,
 		data: payload,
 	})
+
+export const markCheckBox = (payload = {}, auth = {}, token = "") =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v2/odata/BPI/Ice.BO.UD03Svc/UD03s`,
+		method: "post",
+		auth: auth,
+		data: payload,
+	})

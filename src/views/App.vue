@@ -47,6 +47,7 @@ export default {
 		},
 		reset() {
 			this.$store.dispatch("company/clear")
+			this.$store.dispatch("index/reset")
 			this.$router.push({ name: "home" })
 		},
 	},

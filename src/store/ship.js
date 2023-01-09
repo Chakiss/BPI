@@ -105,7 +105,7 @@ export default {
 
 					const serialPayload = {
 						id: item.RowIdent,
-						quantity: parseFloat(item.Calculated_Number13),
+						quantity: parseFloat(item.Calculated_Qty_QRCode),
 						companyCode: item.UD03_Company,
 						barcode: item.UD03_Key1,
 						companySiteID: item.UD03_ShortChar20,
@@ -129,24 +129,31 @@ export default {
 					)
 					console.log(`[product][list]`, products)
 
-					if (products.length <= 0) throw new Error("ไม่พบสินค้านี้ในระบบ")
+					if (products.length <= 0) throw new Error("ข้อมูลสินค้าไม่ตรงกับ Sales Order กรุณาตรวจสอบ")
 
 					const product = products[0]
 					console.log(`[product][done]`, product)
 
-					const productPayload = {
-						id: product.RowIdent,
-						binNumber: product.PartBin_BinNum,
-						companyCode: product.PartBin_Company,
-						lotNumber: product.PartBin_LotNum,
-						quantity: parseFloat(product.PartBin_OnhandQty),
-						partNumber: product.PartBin_PartNum,
-						wareHouseCode: product.PartBin_WarehouseCode,
-						companySiteID: product.Warehse_Plant,
-					}
-					console.log(`[product][parsed]`, productPayload)
+					console.log(`[product][qty]`, parseFloat(product.PartBin_OnhandQty))
+					console.log("serialPayload qty onhand", serialPayload.quantity)
+					if (serialPayload.quantity >= parseFloat(product.PartBin_OnhandQty)) {
+						return resolve({ serial: serialPayload, product: product, error: "สินค้าไม่พอเบิก" })
+					} else {
+						const productPayload = {
+							id: product.RowIdent,
+							barcode: serialPayload.barcode,
+							binNumber: product.PartBin_BinNum,
+							companyCode: product.PartBin_Company,
+							lotNumber: product.PartBin_LotNum,
+							quantity: serialPayload.quantity,
+							partNumber: product.PartBin_PartNum,
+							wareHouseCode: product.PartBin_WarehouseCode,
+							companySiteID: product.Warehse_Plant,
+						}
+						console.log(`[product][parsed]`, productPayload)
 
-					return resolve({ serial: serialPayload, product: productPayload })
+						return resolve({ serial: serialPayload, product: productPayload, error: "" })
+					}
 				} catch (error) {
 					return reject(error)
 				} finally {
