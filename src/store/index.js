@@ -5,6 +5,7 @@ import { mdiCash100, mdiTransfer, mdiZipBoxOutline, mdiHandshakeOutline } from "
 import auth from "@/store/auth"
 import company from "@/store/company"
 import ship from "@/store/ship"
+import transfer from "@/store/transfer"
 
 const vuexLocal = new VuexPersistence({
 	storage: window.localStorage,
@@ -47,5 +48,5 @@ export default new Vuex.Store({
 		},
 	},
 	plugins: [vuexLocal.plugin],
-	modules: { company, ship, auth },
+	modules: { company, ship, transfer, auth },
 })
