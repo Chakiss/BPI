@@ -40,7 +40,6 @@ export default {
 						binName: item["WhseBin_Description"] || null,
 						withdrawalSlipAmount: item["UD28_Number04"] || null,
 						orderDocument: item["UD28_Number14"] || null,
-						orderDocument: item["UD28_Number14"] || null,
 						partProduct: item["UD28_ShortChar08"] || null,
 						lifeProduct: parseFloat(item["OrderDtl_Life01_c"]) || null,
 						site: item["UD28_ShortChar20"] || null,
@@ -95,8 +94,8 @@ export default {
 						bin: item["UD24_Character04"] || null,
 						productName: item["UD24_Character09"] || null,
 						lot: item["UD24_Character10"] || null,
-						quantity: item["Calculated_Qty"] || null,
-						onHandQty: item["PartBin_OnHandQty"] || null,
+						quantity: parseFloat(item["Calculated_Qty"]) || null,
+						onHandQty: parseFloat(item["PartBin_OnhandQty"]) || null,
 						unit: item["PartBin_DimCode"] || null,
 						tagProductLife: parseFloat(item["Calculated_P_Life"]) || null,
 						site: item["UD24_ShortChar20"] || null,
@@ -107,6 +106,28 @@ export default {
 					return resolve({ product: payload })
 				} catch (error) {
 					console.log(`[part][error]`, error)
+					return reject(error)
+				} finally {
+					dispatch("hideLoader", null, { root: true })
+				}
+			}),
+
+		submitTransfer: ({ rootGetters, dispatch }, payload = {}) =>
+			new Promise(async (resolve, reject) => {
+				try {
+					console.log(`[submit][start] checking`)
+					console.log(`[submit][start] payload`, payload)
+
+					const companyCode = rootGetters["company/selectedCompanyCode"] || ""
+					const companySiteID = rootGetters["company/selectedCompanySiteID"] || ""
+					dispatch("showLoader", null, { root: true })
+
+					const response = await submitTransfer(payload, rootGetters["auth/auth"], rootGetters["auth/token"])
+					console.log(response)
+
+					return resolve(true)
+				} catch (error) {
+					console.log(`[submit][error]`, error)
 					return reject(error)
 				} finally {
 					dispatch("hideLoader", null, { root: true })

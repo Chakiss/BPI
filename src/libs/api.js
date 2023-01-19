@@ -1,7 +1,7 @@
 import axios from "axios"
 
 export const client = axios.create({
-	baseURL: "https://erp.bpi-concretepile.co.th/BPI_UAT/api",
+	baseURL: "https://erp.bpi-concretepile.co.th/BPI_UAT1/api",
 })
 
 client.interceptors.response.use(async ({ data }) => {
@@ -21,7 +21,7 @@ export const getCompanies = (auth = {}) =>
 	})
 export const authen = (auth = {}) =>
 	client({
-		url: `https://erp.bpi-concretepile.co.th/BPI_UAT/TokenResource.svc/`,
+		url: `https://erp.bpi-concretepile.co.th/BPI_UAT1/TokenResource.svc/`,
 		method: "post",
 		headers: auth,
 	})
@@ -99,4 +99,13 @@ export const checkPart = (companyCode, companySiteID, QRCode, auth = {}, token =
 		url: `v1/BaqSvc/ADT_INVJ_SINVJ1091_012('${companyCode}')/?Key1='${QRCode}'&Plant='${companySiteID}'`,
 		method: "get",
 		auth: auth,
+	})
+
+export const submitTransfer = (payload = {}, auth = {}, token = "") =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v2/odata/BPI/Ice.BO.UD26Svc/UD26s?API-Key=gKlnIKnXvROeLbZlz6oZ2Lm7nFfQxotJego9sRLnPbwwH`,
+		method: "post",
+		auth: auth,
+		data: payload,
 	})
