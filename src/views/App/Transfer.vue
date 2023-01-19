@@ -19,10 +19,17 @@ v-container
 				v-text-field(v-model="form.calculatedPickingList" type="text" solo flat hide-details readonly)
 			v-col(cols="12" sm="4")
 				.text-caption.white--text Warehouse:
-				v-text-field(v-model="form.calculatedWH" type="text" solo flat hide-details readonly)
+				v-text-field(v-model.sync="form.calculatedWH" type="text" solo flat hide-details readonly)
+					template(v-slot:append)
+						v-btn(text color="error" small rounded @click="searchWarehouse()")
+							v-icon(center) {{ mdiCommentEdit }}
+						
 			v-col(cols="12" sm="4")
 				.text-caption.white--text Bin:
 				v-text-field(v-model="form.calculatedBin" type="text" solo flat hide-details readonly)
+					template(v-slot:append)
+							v-btn(text color="error" small rounded @click="searchWarehouse()")
+								v-icon(center) {{ mdiCommentEdit }}
 	
 	//- Barcode - Document Order
 	v-col(cols="12")
@@ -89,21 +96,25 @@ v-container
 				v-btn(block dark depressed color="accent" x-large rounded @click="submitTransfer()") โอนย้าย
 			v-col(cols="6")
 				v-btn(block outlined dark x-large rounded @click="resetAll()") ยกเลิก	
+	SearchTable(v-if="showSearhDialog" :items.sync="this.form.searchWarehouse" @closed="showSearhDialog = false")
 </template>
 
 <script>
-import { mdiCalendarMonthOutline, mdiBarcodeScan, mdiTextBoxOutline, mdiTrashCanOutline } from "@mdi/js"
+import { mdiCalendarMonthOutline, mdiBarcodeScan, mdiTextBoxOutline, mdiTrashCanOutline, mdiCommentEdit } from "@mdi/js"
 import dayjs from "@/plugins/dayjs"
 import DateField from "@/components/pickers/Date.vue"
 import BarcodeField from "@/components/pickers/Barcode.vue"
+import SearchTable from "@/components/pickers/SearchTable.vue"
 
 export default {
-	components: { DateField, BarcodeField },
+	components: { DateField, BarcodeField, SearchTable },
 	data: () => ({
+		showSearhDialog: false,
 		mdiCalendarMonthOutline: mdiCalendarMonthOutline,
 		mdiTextBoxOutline: mdiTextBoxOutline,
 		mdiBarcodeScan: mdiBarcodeScan,
 		mdiTrashCanOutline: mdiTrashCanOutline,
+		mdiCommentEdit: mdiCommentEdit,
 		datePickerOption: {
 			type: "text",
 			prependInnerIcon: mdiCalendarMonthOutline,
@@ -131,6 +142,7 @@ export default {
 			needQtySend: null,
 			qtySend: null,
 			products: [],
+			searchWarehouse: [],
 		},
 	}),
 	methods: {
@@ -142,7 +154,7 @@ export default {
 				this.form.calculatedPickingList = picking[0]["UD28_Key1"]
 				this.form.calculatedWH = picking[0]["UD28_ShortChar14"]
 				this.form.calculatedBin = picking[0]["UD28_ShortChar15"]
-				this.form.orderDocument = picking[0]["UD28_Number14"]
+				this.form.orderDocument = parseInt(picking[0]["UD28_Number14"]) || 0
 				this.form.productCode = picking[0]["UD28_ShortChar08"]
 				this.form.productName = picking[0]["UD28_Character09"]
 				this.form.needQtySend = picking[0]["UD28_Number04"]
@@ -151,6 +163,13 @@ export default {
 				this.resetPlan()
 				alert(error.message)
 			}
+		},
+
+		async searchWarehouse() {
+			const { searchWareHouse } = await this.$store.dispatch("transfer/searchWareHouse")
+			this.form.searchWarehouse = searchWareHouse
+			console.log("this.form.searchWarehouse", this.form.searchWarehouse)
+			this.showSearhDialog = true
 		},
 
 		async partScanned(qrString) {

@@ -85,10 +85,19 @@ export const markCheckBox = (payload = {}, auth = {}, token = "") =>
 		data: payload,
 	})
 
+// Transfer
 export const checkPicking = (companyCode, companySiteID, QRCode, auth = {}, token = "") =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
 		url: `v1/BaqSvc/ADT_INVJ_SINVJ1091_011('${companyCode}')/?QRCode='${QRCode}'&Plant='${companySiteID}'`,
+		method: "get",
+		auth: auth,
+	})
+
+export const searchWarehouse = (companyCode, companySiteID, auth = {}, token = "") =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `v1/BaqSvc/ADT_WH('${companyCode}')/?Plant='${companySiteID}'`,
 		method: "get",
 		auth: auth,
 	})
