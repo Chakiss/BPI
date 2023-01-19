@@ -88,7 +88,7 @@ export const markCheckBox = (payload = {}, auth = {}, token = "") =>
 export const checkPicking = (companyCode, companySiteID, QRCode, auth = {}, token = "") =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `v1/BaqSvc/ADT_INVJ_SINVJ1091_011('${companyCode}')/?Key1='${QRCode}'&Plant='${companySiteID}'`,
+		url: `v1/BaqSvc/ADT_INVJ_SINVJ1091_011('${companyCode}')/?QRCode='${QRCode}'&Plant='${companySiteID}'`,
 		method: "get",
 		auth: auth,
 	})
@@ -96,7 +96,7 @@ export const checkPicking = (companyCode, companySiteID, QRCode, auth = {}, toke
 export const checkPart = (companyCode, companySiteID, QRCode, auth = {}, token = "") =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `v1/BaqSvc/ADT_INVJ_SINVJ1091_012('${companyCode}')/?Key1='${QRCode}'&Plant='${companySiteID}'`,
+		url: `v1/BaqSvc/ADT_INVJ_SINVJ1091_012('${companyCode}')/?QRCode='${QRCode}'&Plant='${companySiteID}'`,
 		method: "get",
 		auth: auth,
 	})

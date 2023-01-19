@@ -18,16 +18,16 @@ v-container
 				.text-caption.white--text เลขที่เอกสาร:
 				v-text-field(v-model="form.calculatedPickingList" type="text" solo flat hide-details readonly)
 			v-col(cols="12" sm="4")
-				.text-caption.white--text warehouse:
+				.text-caption.white--text Warehouse:
 				v-text-field(v-model="form.calculatedWH" type="text" solo flat hide-details readonly)
 			v-col(cols="12" sm="4")
-				.text-caption.white--text bin:
+				.text-caption.white--text Bin:
 				v-text-field(v-model="form.calculatedBin" type="text" solo flat hide-details readonly)
 	
 	//- Barcode - Document Order
 	v-col(cols="12")
 		.text-caption.white--text ลำดับในเอกสาร:
-		BarcodeField(:model.sync="form.barcodePart" :option="{...barcodePickerOption}" @scanned="partScanned")
+		BarcodeField(:model.sync="form.orderDocument" :option="{...barcodePickerOption}" @scanned="partScanned")
 	
 	//- Result (Barcode - Product)
 	v-col(cols="12")
@@ -49,10 +49,10 @@ v-container
 		v-row
 			v-col(cols="12" sm="6")
 				.text-caption.white--text ต้องการส่ง:
-				v-text-field(v-model="form.productCode" type="text" solo flat hide-details readonly)
+				v-text-field(v-model="form.needQtySend" type="text" solo flat hide-details readonly)
 			v-col(cols="12" sm="6")
 				.text-caption.white--text จำนวนส่ง:
-				v-text-field(v-model="form.productName" type="text" solo flat hide-details readonly)
+				v-text-field(v-model="form.qtySend" type="text" solo flat hide-details readonly)
      
 
 	v-col(cols="12")
@@ -121,12 +121,15 @@ export default {
 		},
 		form: {
 			transferDate: dayjs().format("YYYY-MM-DD"),
+			pickingList: [],
 			calculatedPickingList: null,
-			calculatedWHAndBin: null,
-			picking: null,
-			product: null,
+			calculatedWH: null,
+			calculatedBin: null,
+			orderDocument: null,
 			productCode: null,
 			productName: null,
+			needQtySend: null,
+			qtySend: null,
 			products: [],
 		},
 	}),
@@ -135,9 +138,15 @@ export default {
 			try {
 				const { picking } = await this.$store.dispatch("transfer/checkPickingByQRCode", qrString)
 				console.log("picking", picking)
-				this.form.picking = picking
-				this.form.calculatedPickingList = picking.calculatedPickingList
-				this.form.calculatedWHAndBin = picking.calculatedWarehouse + " " + picking.calculatedBin
+				this.form.pickingList = picking
+				this.form.calculatedPickingList = picking[0]["UD28_Key1"]
+				this.form.calculatedWH = picking[0]["UD28_ShortChar14"]
+				this.form.calculatedBin = picking[0]["UD28_ShortChar15"]
+				this.form.orderDocument = picking[0]["UD28_Number14"]
+				this.form.productCode = picking[0]["UD28_ShortChar08"]
+				this.form.productName = picking[0]["UD28_Character09"]
+				this.form.needQtySend = picking[0]["UD28_Number04"]
+				// picking[0]["OrderDtl_Life01_c"]
 			} catch (error) {
 				this.resetPlan()
 				alert(error.message)

@@ -26,34 +26,34 @@ export default {
 
 					if (items.length <= 0) throw new Error("ไม่พบ Plan นี้ในระบบ")
 
-					const item = items[0]
+					// const item = items[0]
 
-					console.log(`[pickicking][done]`, item)
+					// console.log(`[pickicking][done]`, item)
 
-					const payload = {
-						id: item.RowIdent,
-						qrCodePickingList: item["UD28_Key1"] || null,
-						calculatedPickingList: item["Calculated_PickingList"] || null,
-						calculatedBin: item["Calculated_Bin"] || null,
-						calculatedWarehouse: item["Calculated_Warehouse"] || null,
-						warehouseName: item["Warehse_Description"] || null,
-						binName: item["WhseBin_Description"] || null,
-						withdrawalSlipAmount: item["UD28_Number04"] || null,
-						orderDocument: item["UD28_Number14"] || null,
-						partProduct: item["UD28_ShortChar08"] || null,
-						lifeProduct: parseFloat(item["OrderDtl_Life01_c"]) || null,
-						site: item["UD28_ShortChar20"] || null,
-						carLicense: item["UD28_Key5"] || null,
-						soPack: item["UD28_ShortChar16"] || null,
-						soLinePackline: item["UD28_ShortChar17"] || null,
-						soRelease: item["UD28_ShortChar18"] || null,
-						packSO: item["UD28_Character01"] || null,
-						systemDate: item["Calculated_SysDate"] || null,
-					}
+					// const payload = {
+					// 	id: item.RowIdent,
+					// 	qrCodePickingList: item["UD28_Key1"] || null,
+					// 	calculatedPickingList: item["Calculated_PickingList"] || null,
+					// 	calculatedBin: item["Calculated_Bin"] || null,
+					// 	calculatedWarehouse: item["Calculated_Warehouse"] || null,
+					// 	warehouseName: item["Warehse_Description"] || null,
+					// 	binName: item["WhseBin_Description"] || null,
+					// 	withdrawalSlipAmount: item["UD28_Number04"] || null,
+					// 	orderDocument: item["UD28_Number14"] || null,
+					// 	partProduct: item["UD28_ShortChar08"] || null,
+					// 	lifeProduct: parseFloat(item["OrderDtl_Life01_c"]) || null,
+					// 	site: item["UD28_ShortChar20"] || null,
+					// 	carLicense: item["UD28_Key5"] || null,
+					// 	soPack: item["UD28_ShortChar16"] || null,
+					// 	soLinePackline: item["UD28_ShortChar17"] || null,
+					// 	soRelease: item["UD28_ShortChar18"] || null,
+					// 	packSO: item["UD28_Character01"] || null,
+					// 	systemDate: item["Calculated_SysDate"] || null,
+					// }
 
-					console.log(`[pickicking][parsed]`, payload)
+					console.log(`[pickicking][parsed]`, items)
 
-					return resolve({ picking: payload })
+					return resolve({ picking: items })
 				} catch (error) {
 					console.log(`[pickicking][error]`, error)
 					return reject(error)
