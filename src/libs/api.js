@@ -89,7 +89,7 @@ export const markCheckBox = (payload = {}, auth = {}, token = "") =>
 export const checkPicking = (companyCode, companySiteID, QRCode, auth = {}, token = "") =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `v1/BaqSvc/ADT_INVJ_SINVJ1091_011('${companyCode}')/?QRCode='${QRCode}'&Plant='${companySiteID}'`,
+		url: `/v1/BaqSvc/ADT_INVJ_SINVJ1091_011('${companyCode}')/?QRCode='${QRCode}'&Plant='${companySiteID}'`,
 		method: "get",
 		auth: auth,
 	})
@@ -97,7 +97,15 @@ export const checkPicking = (companyCode, companySiteID, QRCode, auth = {}, toke
 export const searchWarehouse = (companyCode, companySiteID, auth = {}, token = "") =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `v1/BaqSvc/ADT_WH('${companyCode}')/?Plant='${companySiteID}'`,
+		url: `/v1/BaqSvc/ADT_WH('${companyCode}')/?Plant='${companySiteID}'`,
+		method: "get",
+		auth: auth,
+	})
+
+export const searchBin = (companyCode, companySiteID, WH, auth = {}, token = "") =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v1/BaqSvc/ADT_WHBin('${companyCode}')/?WH='${WH}'&Plant='${companySiteID}'`,
 		method: "get",
 		auth: auth,
 	})
@@ -105,15 +113,33 @@ export const searchWarehouse = (companyCode, companySiteID, auth = {}, token = "
 export const checkPart = (companyCode, companySiteID, QRCode, auth = {}, token = "") =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `v1/BaqSvc/ADT_INVJ_SINVJ1091_012('${companyCode}')/?QRCode='${QRCode}'&Plant='${companySiteID}'`,
+		url: `/v1/BaqSvc/ADT_INVJ_SINVJ1091_012('${companyCode}')/?QRCode='${QRCode}'&Plant='${companySiteID}'`,
 		method: "get",
 		auth: auth,
 	})
 
-export const submitTransfer = (payload = {}, auth = {}, token = "") =>
+export const submitTransferUD26 = (companyCode, payload = {}, auth = {}, token = "") =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `/v2/odata/BPI/Ice.BO.UD26Svc/UD26s?API-Key=gKlnIKnXvROeLbZlz6oZ2Lm7nFfQxotJego9sRLnPbwwH`,
+		url: `/v2/odata/${companyCode}/Ice.BO.UD26Svc/UD26s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
+		method: "post",
+		auth: auth,
+		data: payload,
+	})
+
+export const submitTransferUD24 = (companyCode, payload = {}, auth = {}, token = "") =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v2/odata/${companyCode}/Ice.BO.UD24Svc/UD24s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
+		method: "post",
+		auth: auth,
+		data: payload,
+	})
+
+export const submitTransferUD28 = (companyCode, payload = {}, auth = {}, token = "") =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v2/odata/${companyCode}/Ice.BO.UD28Svc/UD28s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
 		method: "post",
 		auth: auth,
 		data: payload,

@@ -2,7 +2,7 @@
 v-dialog(v-model="dialog" persistent content-class="rounded-lg" max-width="540px")
         v-card(rounded="lg")
                 v-card-title
-                        .text-subtitle-1 Search warehouse
+                        .text-subtitle-1 Search bin
                         v-spacer
                         v-btn(icon @click="close")
                                 v-icon {{ mdiClose }}
@@ -10,12 +10,12 @@ v-dialog(v-model="dialog" persistent content-class="rounded-lg" max-width="540px
                         template(v-slot:default)
                                 thead
                                         tr
-                                                th.text-center W/H
+                                                th.text-center Bin
                                                 th.text-center Name
                                 tbody
                                         tr(v-for="item in items" @click="handleRowClick(item)")
-                                                td.text-center {{ item.Warehse_WarehouseCode }}
-                                                td.text-center {{ item.Warehse_Description }}
+                                                td.text-center {{ item.WhseBin_BinNum }}
+                                                td.text-center {{ item.WhseBin_Description }}
 </template>
 
 <script>
