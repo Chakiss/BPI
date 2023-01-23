@@ -209,7 +209,7 @@ export default {
 			if (this.sumOfQty > 0) {
 				if (confirm("รายการทั้งหมดต้องการโอนย้ายหรือไม่?")) {
 					// the user clicked OK
-					this.resetProducts()
+					this.submitTransfer()
 				} else {
 					// the user clicked Cancel
 
