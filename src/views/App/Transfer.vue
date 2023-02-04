@@ -45,7 +45,7 @@ v-container
 			v-col(cols="12" sm="6")
 				.text-caption.white--text ชื่อสินค้า:
 				v-text-field(v-model="form.productName" type="text" solo flat hide-details readonly)
-     
+	
 	//- Barcode - Part Barcode
 	v-col(cols="12")
 		.text-caption.white--text Part Barcode:
@@ -54,13 +54,16 @@ v-container
 	//- Result 
 	v-col(cols="12")
 		v-row
-			v-col(cols="12" sm="6")
+			v-col(cols="12" sm="4")
+				.text-caption.white--text ต้องการส่ง:
+				v-text-field(v-model="form.needTransferQty" type="text" solo flat hide-details readonly)
+			v-col(cols="12" sm="4")
 				.text-caption.white--text จำนวนรวม:
 				v-text-field(v-model="sumOfQty" type="text" solo flat hide-details readonly)
-			v-col(cols="12" sm="6")
+			v-col(cols="12" sm="4")
 				.text-caption.white--text หน่วย:
 				v-text-field(v-model="form.partBin_DimCode" type="text" solo flat hide-details readonly)
-     
+	
 
 	v-col(cols="12")
 		.text-caption.white--text รายการ:
@@ -71,21 +74,21 @@ v-container
 						tr
 							th.text-center ลำดับ
 							th.text-center Lot
-							th.text-center ต้องการส่ง
+							//- th.text-center ต้องการส่ง
 							th.text-center Qty
 							
 					tbody
 						tr(v-for="(item,index) in form.products" :key="index")
 							td.text-center {{ index+1 }}
 							td.text-center {{ item.UD24_Character10 }}
-							td.text-center {{ parseInt(form.selectedDocument.UD28_Number04) }}
+							//- td.text-center {{ parseInt(form.selectedDocument.UD28_Number04) }}
 							td.text-center {{ parseInt(item.Calculated_Qty) }}
 							//- td.text-center {{ form.picking.lifeProduct }}
 							//- td.text-center {{ form.picking.withdrawalSlipAmount }}
-							//- td.text-center
-							//- 	v-btn(text color="error" small rounded @click="$delete(form.products,index)")
-							//- 		v-icon(left) {{ mdiTrashCanOutline }}
-							//- 			span ลบ
+							td.text-center
+								v-btn(text color="error" small rounded @click="$delete(form.products,index)")
+									v-icon(left) {{ mdiTrashCanOutline }}
+										span ลบ
 
 	
 
@@ -141,6 +144,7 @@ export default {
 			calculatedBin: null,
 			selectedDocument: null,
 			tmpselectedDocument: null,
+			needTransferQty: 0,
 			productCode: null,
 			productName: null,
 			qtySend: null,
@@ -159,10 +163,11 @@ export default {
 				this.form.calculatedPickingList = picking[0]["UD28_Key1"]
 				this.form.calculatedWH = picking[0]["UD28_ShortChar14"]
 				this.form.calculatedBin = picking[0]["UD28_ShortChar15"]
-				this.form.selectedDocument = picking[0]
-				this.form.tmpselectedDocument = this.form.selectedDocument
-				this.form.productCode = picking[0]["UD28_ShortChar08"]
-				this.form.productName = picking[0]["UD28_Character09"]
+				// this.form.selectedDocument = picking[0]
+				// this.form.tmpselectedDocument = this.form.selectedDocument
+				// this.form.needTransferQty = parseInt(picking[0]["UD28_Number04"])
+				// this.form.productCode = picking[0]["UD28_ShortChar08"]
+				// this.form.productName = picking[0]["UD28_Character09"]
 				// picking[0]["OrderDtl_Life01_c"]
 			} catch (error) {
 				this.resetPlan()
@@ -202,25 +207,36 @@ export default {
 		},
 
 		async handleSelectChange(item) {
-			console.log("this.form.tmpselectedDocument", this.form.tmpselectedDocument.UD28_Number14)
-			console.log("this.form.selectedDocument", this.form.selectedDocument.UD28_Number14)
-			console.log("selectedDocument", item.UD28_Number14)
-			console.log("sumOfQty", this.sumOfQty)
+			console.log("this.form.tmpselectedDocument", this.form.tmpselectedDocument)
+			console.log("this.form.selectedDocument", this.form.selectedDocument)
+			console.log("selectedDocument", item)
+
+			if (item.UD28_CheckBox01 == true) {
+				if (confirm("ลำดับนี้ทำรายการไปแล้ว ต้องทำรายการซ้ำหรือไม่?")) {
+				} else {
+					this.resetProducts()
+
+					return
+				}
+			}
+
 			if (this.sumOfQty > 0) {
 				if (confirm("รายการทั้งหมดต้องการโอนย้ายหรือไม่?")) {
 					// the user clicked OK
+					this.form.selectedDocument = this.form.tmpselectedDocument
 					this.submitTransfer()
 				} else {
 					// the user clicked Cancel
 
 					this.form.selectedDocument = this.form.tmpselectedDocument
-
+					this.form.needTransferQty = parseInt(this.form.selectedDocument.UD28_Number04)
 					this.resetProducts()
 					//this.form.tmpselectedDocument = this.form.selectedDocument
 				}
 			} else {
 				this.form.selectedDocument = item
-				this.form.tmpselectedDocument = this.form.selectedDocument
+				this.form.needTransferQty = parseInt(item.UD28_Number04)
+				this.form.tmpselectedDocument = item
 				this.form.productCode = item.UD28_ShortChar08
 				this.form.productName = item.UD28_Character09
 			}
@@ -234,41 +250,72 @@ export default {
 		async partScanned(qrString) {
 			try {
 				const { product } = await this.$store.dispatch("transfer/checkPartByQRCode", qrString)
-				if (this.form.products.some((obj) => obj.UD24_Key1 == qrString)) {
+
+				let checkKey1 = false
+				for (const product of this.form.products) {
+					for (const key1 of product.Key1Array) {
+						if (key1 == qrString) {
+							checkKey1 = true
+						}
+					}
+				}
+				if (checkKey1 == true) {
 					alert("ป้ายแท๊กนี้ถูกสแกนรับค่าแล้ว")
 				} else {
 					const item = product
+					console.log("[scan item]", item)
+					if (this.form.products.length > 0) {
+						console.log("this.form.products", this.form.products[0].UD24_Key1)
+					}
 					//UD24_Key1
 					if (item.UD24_Key1 !== null) {
 						console.log("item.UD24_Key5", item.UD24_Key5)
-
-						let checkPicking = false
-						this.form.pickingList.forEach((picking) => {
-							console.log("checking....", picking.UD28_ShortChar08)
-							if (picking.UD28_ShortChar08 == item.UD24_Key5) {
-								console.log("FOUND!!!!")
-								checkPicking = true
-							}
-						})
-						if (checkPicking == true) {
+						console.log("this.form.selectedDocument.UD28_ShortChar08", this.form.selectedDocument.UD28_ShortChar08)
+						if (item.UD24_Key5 === this.form.selectedDocument.UD28_ShortChar08) {
 							if (item.UD24_CheckBox01 == false) {
 								if (item.Calculated_P_Life >= this.form.selectedDocument.OrderDtl_Life01_c) {
-									if (item.Calculated_Qty <= item.PartBin_OnhandQty) {
-										let foundObject = this.form.products.find((obj) => obj.UD24_Character10 === item.UD24_Character10)
-										console.log("foundObject", foundObject)
+									console.log("item.Calculated_Qty", item.Calculated_Qty)
+									console.log("item.PartBin_OnhandQty", item.PartBin_OnhandQty)
+									if (this.sumOfQty >= this.form.needTransferQty) {
+										alert("จำนวนเกินยอดที่ต้องการส่ง")
+									} else {
+										let foundObject = this.form.products.find(
+											(obj) =>
+												obj.UD24_Character10 === item.UD24_Character10 &&
+												obj.UD24_Key5 === item.UD24_Key5 &&
+												obj.UD24_Character03 === item.UD24_Character03 &&
+												obj.UD24_Character04 === item.UD24_Character04
+										)
 										if (foundObject) {
-											if (parseInt(foundObject.Calculated_Qty) + parseInt(item.Calculated_Qty) > parseInt(this.form.selectedDocument.UD28_Number04)) {
-												alert("จำนวนเกินยอดที่ต้องการส่ง")
-											} else {
+											console.log("foundObject.Calculated_Qty", foundObject.Calculated_Qty)
+											console.log("foundObject.PartBin_OnhandQty", foundObject.PartBin_OnhandQty)
+											console.log("this.sumOfQty", this.sumOfQty)
+											const tempQTY = parseInt(foundObject.Calculated_Qty) + parseInt(item.Calculated_Qty)
+											if (tempQTY <= foundObject.PartBin_OnhandQty) {
 												foundObject.Calculated_Qty = parseInt(foundObject.Calculated_Qty) + parseInt(item.Calculated_Qty)
+												foundObject.Key1Array.push(item.UD24_Key1)
+												this.form.partBin_DimCode = item.PartBin_DimCode
+											} else {
+												alert("จำนวนของในระบบมีไม่พอโอนย้าย กรุณาตรวจสอบ")
 											}
 										} else {
-											this.form.products.push(item)
+											console.log("[Prepare][ADD] ITEM", item)
+											if (parseInt(item.Calculated_Qty) <= parseInt(item.PartBin_OnhandQty)) {
+												item.Key1Array = []
+												item.Key1Array.push(item.UD24_Key1)
+												item.Key5Array = []
+												const key = item.UD24_Key5
+												const key5 = {
+													key: item.PartBin_OnhandQty,
+												}
+												item.Key5Array.push(key5)
+												console.log("Add item", item)
+												this.form.products.push(item)
+												this.form.partBin_DimCode = item.PartBin_DimCode
+											} else {
+												alert("จำนวนของในระบบมีไม่พอโอนย้าย กรุณาตรวจสอบ")
+											}
 										}
-
-										this.form.partBin_DimCode = item.PartBin_DimCode
-									} else {
-										alert("จำนวนของในระบบมีไม่พอโอนย้าย กรุณาตรวจสอบ")
 									}
 								} else {
 									alert("สินค้าอายุไม่ถึงวันที่กำหนด")
@@ -294,12 +341,14 @@ export default {
 				for (const [index, product] of this.form.products.entries()) {
 					console.log("product", product)
 					console.log("this.form.selectedDocument", this.form.selectedDocument)
+
 					const payloadUD26 = {
 						Company: product.UD24_Company,
 						Key1: product.UD24_Key5,
 						Key2: product.UD24_Character10,
 						Key3: product.UD24_Character03,
 						Key4: product.UD24_Character04,
+						Key5: this.form.selectedDocument.UD28_Key1,
 						Character02: this.form.selectedDocument.UD28_Key1,
 						Character05: "Inv",
 						Character06: this.form.partBin_DimCode,
@@ -308,14 +357,14 @@ export default {
 						Character09: this.form.selectedDocument.UD28_Character09,
 						Number01: parseInt(this.form.selectedDocument.UD28_Key3),
 						Number02: parseInt(this.form.selectedDocument.UD28_Key4),
-						Number04: parseInt(this.sumOfQty),
+						Number04: parseInt(product.Calculated_Qty),
 						Number10: index + 1,
 						Number14: this.form.selectedDocument.UD28_Number14,
 						Date01: this.form.transferDate,
 						Date02: this.form.transferDate,
 						Date03: this.form.transferDate,
-						ShortChar09: this.form.selectedDocument.UD28_ShortChar14,
-						ShortChar10: this.form.selectedDocument.UD28_ShortChar15,
+						ShortChar09: this.form.calculatedWH,
+						ShortChar10: this.form.calculatedBin,
 						ShortChar15: this.form.selectedDocument.UD28_Key5,
 						ShortChar16: this.form.selectedDocument.UD28_Key2,
 						ShortChar20: this.$store.getters["company/selectedCompanySiteID"],
@@ -324,26 +373,36 @@ export default {
 					const response26 = await this.$store.dispatch("transfer/submitTransferUD26", payloadUD26)
 					console.log("response26", response26)
 
-					const payloadUD24 = {
-						Company: product.UD24_Company,
-						Key1: product.UD24_Key1,
-						CheckBox01: true,
-						ShortChar20: this.$store.getters["company/selectedCompanySiteID"],
+					for (const key1 of product.Key1Array) {
+						const payloadUD24 = {
+							Company: product.UD24_Company,
+							Key1: key1,
+							Key5: product.UD24_Key5,
+							CheckBox01: true,
+							ShortChar20: this.$store.getters["company/selectedCompanySiteID"],
+						}
+						const response24 = await this.$store.dispatch("transfer/submitTransferUD24", payloadUD24)
+						console.log("response24", response24)
 					}
-					const response24 = await this.$store.dispatch("transfer/submitTransferUD24", payloadUD24)
-					console.log("response24", response24)
 
 					const payloadUD28 = {
 						Company: product.UD24_Company,
-						Key1: product.UD24_Key1,
+						Key1: this.form.selectedDocument.UD28_Key1,
+						Key2: this.form.selectedDocument.UD28_Key2,
+						Key3: this.form.selectedDocument.UD28_Key3,
+						Key4: this.form.selectedDocument.UD28_Key4,
+						Key5: this.form.selectedDocument.UD28_Key5,
+						Number14: this.form.selectedDocument.UD28_Number14,
 						CheckBox01: true,
 						ShortChar20: this.$store.getters["company/selectedCompanySiteID"],
 					}
 					const response28 = await this.$store.dispatch("transfer/submitTransferUD28", payloadUD28)
 					console.log("response28", response28)
 				}
-				alert("ส่งข้อมูลเรียบร้อยแล้ว")
-				this.resetAll()
+				if (this.form.products.length > 0) {
+					alert("ส่งข้อมูลเรียบร้อยแล้ว")
+					this.resetAll()
+				}
 			} catch (error) {
 				alert(error.message)
 			}
@@ -352,34 +411,23 @@ export default {
 		resetPlan() {
 			this.form.barcodePicking = null
 		},
-		resetSaleOrder() {
-			this.form.barcodeSaleOrder = null
-			this.form.saleOrderSO = null
-			this.form.saleOrderLine = null
-			this.form.saleOrderRel = null
-			this.form.saleOrderProductID = null
-			this.form.saleOrderProductAmount = null
-			this.form.saleOrderProductName = null
-		},
-		resetSerial() {
-			this.form.serial = null
-		},
+
 		resetProducts() {
+			this.form.selectedDocument = null
 			this.form.products = []
 			this.form.productCode = null
 			this.form.productName = null
 			this.form.barcodePart = null
 			this.form.partBin_DimCode = null
+			this.form.needTransferQty = null
 		},
 		resetSerialAndProducts() {
 			this.resetProducts()
-			this.resetSerial()
 		},
 		resetAll() {
-			this.resetSerialAndProducts()
-			this.form.barcodeProduct = null
-			this.resetSaleOrder()
-			this.resetPlan()
+			this.resetProducts()
+			this.form.selectedDocument = null
+			//this.resetPlan()
 		},
 	},
 	computed: {

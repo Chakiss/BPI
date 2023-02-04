@@ -1,7 +1,9 @@
 import axios from "axios"
 
 export const client = axios.create({
-	baseURL: "https://erp.bpi-concretepile.co.th/BPI_UAT1/api",
+	//BPI_Live
+	//BPI_UAT1
+	baseURL: "https://erp.bpi-concretepile.co.th/BPI_Live/api",
 })
 
 client.interceptors.response.use(async ({ data }) => {
@@ -21,26 +23,26 @@ export const getCompanies = (auth = {}) =>
 	})
 export const authen = (auth = {}) =>
 	client({
-		url: `https://erp.bpi-concretepile.co.th/BPI_UAT1/TokenResource.svc/`,
+		url: `https://erp.bpi-concretepile.co.th/BPI_Live/TokenResource.svc/`,
 		method: "post",
 		headers: auth,
 	})
 
 export const getPlanByQRCode = (companyCode, companySiteID, QRCode, auth = {}) =>
 	client({
-		url: `/v1/BaqSvc/ADT_INVS_SINVS117_011('${companyCode}')?$select=UD28_Key1&$filter=UD28_Key1 eq '${QRCode}' and UD28_ShortChar20 eq '${companySiteID}'`,
+		url: `/v1/BaqSvc/ADT_INVS_SINVS117_011('${companyCode}')?$select=Calculated_QRCode&UD28_ShortChar20 eq '${companySiteID}'&QRCode='${QRCode}'`,
 		method: "get",
 		auth: auth,
 	})
 
-export const getSalesOrderByQRCode = (companyCode, companySiteID, QRCode, auth = {}) => {
+export const getSalesOrderByQRCode = (companyCode, companySiteID, QRCode, BarcodePlan, auth = {}) => {
 	const QRItems = String(QRCode || "").split(" ")
 	const UD28_Key2 = QRItems[0] || ""
 	const UD28_Key3 = QRItems[1] || ""
 	const UD28_Key4 = QRItems[2] || ""
 
 	return client({
-		url: `/v1/BaqSvc/ADT_INVS_SINVS117_011('${companyCode}')?$filter=UD28_Key2 eq '${UD28_Key2}' and UD28_Key3 eq '${UD28_Key3}' and UD28_Key4 eq '${UD28_Key4}' and UD28_ShortChar20 eq '${companySiteID}'`,
+		url: `/v1/BaqSvc/ADT_INVS_SINVS117_011('${companyCode}')?$filter=UD28_ShortChar20 eq '${companySiteID}' and UD28_Key2 eq '${UD28_Key2}' and UD28_Key3 eq '${UD28_Key3}' and UD28_Key4 eq '${UD28_Key4}'&QRCode=${BarcodePlan}`,
 		method: "get",
 		auth: auth,
 	})
@@ -67,10 +69,20 @@ export const getProductOfSerial = (companyCode, companySiteID, partNumber, wareH
 		auth: auth,
 	})
 
-export const submitEpicor = (payload = {}, auth = {}, token = "") =>
+export const submitEpicor = (companyCode, payload = {}, auth = {}, token = "") =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `/v2/odata/BPI/Ice.BO.UD27Svc/UD27s?API-Key=gKlnIKnXvROeLbZlz6oZ2Lm7nFfQxotJego9sRLnPbwwH`,
+
+		url: `/v2/odata/${companyCode}/Ice.BO.UD27Svc/UD27s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
+		method: "post",
+		auth: auth,
+		data: payload,
+	})
+
+export const submitEpicorUD03 = (companyCode, payload = {}, auth = {}, token = "") =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v2/odata/${companyCode}/Ice.BO.UD03Svc/UD03s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
 		method: "post",
 		auth: auth,
 		data: payload,
