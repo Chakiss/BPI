@@ -9,7 +9,7 @@ v-main(app).primary
         .text-body-1.font-weight-bold Adeptus Thai Co., Ltd.
         v-spacer
         v-btn(:icon="$vuetify.breakpoint.xsOnly" :outlined="$vuetify.breakpoint.smAndUp" rounded @click="reset()")
-            span(v-if="$vuetify.breakpoint.smAndUp") หน้าหลัก
+            span(v-if="$vuetify.breakpoint.smAndUp") Log out
             v-icon(:right="$vuetify.breakpoint.smAndUp") {{ mdiHomeExportOutline }}
     //- Menu
     v-bottom-sheet(v-model="mainMenuVisibility" :inset="$vuetify.breakpoint.smAndUp" content-class="rounded-t-xl overflow-hidden" :max-width="$vuetify.breakpoint.smAndUp ? `450px` : `100%`")
@@ -46,8 +46,9 @@ export default {
 			this.mainMenuVisibility = true
 		},
 		reset() {
+			this.$store.dispatch("index/clear")
+			this.$store.dispatch("auth/reset")
 			this.$store.dispatch("company/clear")
-			this.$store.dispatch("index/reset")
 			this.$router.push({ name: "home" })
 		},
 	},

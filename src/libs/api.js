@@ -3,7 +3,9 @@ import axios from "axios"
 export const client = axios.create({
 	//BPI_Live
 	//BPI_UAT1
-	baseURL: "https://erp.bpi-concretepile.co.th/BPI_Live/api",
+	//BPI_UAT2
+	//BPI_Dev
+	baseURL: "https://erp.bpi-concretepile.co.th/BPI_Dev/api",
 })
 
 client.interceptors.response.use(async ({ data }) => {
@@ -21,9 +23,16 @@ export const getCompanies = (auth = {}) =>
 		method: "get",
 		auth: auth,
 	})
+
+export const getKey = (auth = {}) =>
+	client({
+		url: `/v1/BaqSvc/ADT_DBKey`,
+		method: "get",
+		auth: auth,
+	})
 export const authen = (auth = {}) =>
 	client({
-		url: `https://erp.bpi-concretepile.co.th/BPI_Live/TokenResource.svc/`,
+		url: `https://erp.bpi-concretepile.co.th/BPI_Dev/TokenResource.svc/`,
 		method: "post",
 		headers: auth,
 	})
@@ -37,12 +46,12 @@ export const getPlanByQRCode = (companyCode, companySiteID, QRCode, auth = {}) =
 
 export const getSalesOrderByQRCode = (companyCode, companySiteID, QRCode, BarcodePlan, auth = {}) => {
 	const QRItems = String(QRCode || "").split(" ")
-	const UD28_Key2 = QRItems[0] || ""
-	const UD28_Key3 = QRItems[1] || ""
-	const UD28_Key4 = QRItems[2] || ""
+	const QRItems0 = QRItems[0] || ""
+	const QRItems1 = QRItems[1] || ""
+	const QRItems2 = QRItems[2] || ""
 
 	return client({
-		url: `/v1/BaqSvc/ADT_INVS_SINVS117_011('${companyCode}')?$filter=UD28_ShortChar20 eq '${companySiteID}' and UD28_Key2 eq '${UD28_Key2}' and UD28_Key3 eq '${UD28_Key3}' and UD28_Key4 eq '${UD28_Key4}'&QRCode=${BarcodePlan}`,
+		url: `/v1/BaqSvc/ADT_INVS_SINVS117_011('${companyCode}')?$filter=UD28_ShortChar20 eq '${companySiteID}' and UD28_ShortChar16 eq '${QRItems0}' and UD28_ShortChar17 eq '${QRItems1}' and UD28_ShortChar18 eq '${QRItems2}'&QRCode=${BarcodePlan}`,
 		method: "get",
 		auth: auth,
 	})
@@ -50,7 +59,7 @@ export const getSalesOrderByQRCode = (companyCode, companySiteID, QRCode, Barcod
 
 export const getSerialByQRCode = (companyCode, companySiteID, QRCode, auth = {}) =>
 	client({
-		url: `/v1/BaqSvc/ADT_INVS_SINVS117_021('${companyCode}')?$filter=UD03_Key1 eq '${QRCode}' and UD03_ShortChar20 eq '${companySiteID}'`,
+		url: `/v1/BaqSvc/ADT_INVS_SINVS117_021('${companyCode}')?$filter=UD03_Key1 eq '${QRCode}' and UD03_ShortChar20 eq '${companySiteID}' `,
 		method: "get",
 		auth: auth,
 	})
@@ -69,20 +78,20 @@ export const getProductOfSerial = (companyCode, companySiteID, partNumber, wareH
 		auth: auth,
 	})
 
-export const submitEpicor = (companyCode, payload = {}, auth = {}, token = "") =>
+export const submitEpicor = (companyCode, payload = {}, auth = {}, token = "", APIKey) =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
 
-		url: `/v2/odata/${companyCode}/Ice.BO.UD27Svc/UD27s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
+		url: `/v2/odata/${companyCode}/Ice.BO.UD27Svc/UD27s?API-Key=${APIKey}`,
 		method: "post",
 		auth: auth,
 		data: payload,
 	})
 
-export const submitEpicorUD03 = (companyCode, payload = {}, auth = {}, token = "") =>
+export const submitEpicorUD03 = (companyCode, payload = {}, auth = {}, token = "", APIKey) =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `/v2/odata/${companyCode}/Ice.BO.UD03Svc/UD03s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
+		url: `/v2/odata/${companyCode}/Ice.BO.UD03Svc/UD03s?API-Key=${APIKey}`,
 		method: "post",
 		auth: auth,
 		data: payload,
@@ -130,28 +139,82 @@ export const checkPart = (companyCode, companySiteID, QRCode, auth = {}, token =
 		auth: auth,
 	})
 
-export const submitTransferUD26 = (companyCode, payload = {}, auth = {}, token = "") =>
+export const submitTransferUD26 = (companyCode, payload = {}, auth = {}, token = "", APIKey) =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `/v2/odata/${companyCode}/Ice.BO.UD26Svc/UD26s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
+		url: `/v2/odata/${companyCode}/Ice.BO.UD26Svc/UD26s?API-Key=${APIKey}`,
 		method: "post",
 		auth: auth,
 		data: payload,
 	})
 
-export const submitTransferUD24 = (companyCode, payload = {}, auth = {}, token = "") =>
+export const submitTransferUD24 = (companyCode, payload = {}, auth = {}, token = "", APIKey) =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `/v2/odata/${companyCode}/Ice.BO.UD24Svc/UD24s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
+		url: `/v2/odata/${companyCode}/Ice.BO.UD24Svc/UD24s?API-Key=${APIKey}`,
 		method: "post",
 		auth: auth,
 		data: payload,
 	})
 
-export const submitTransferUD28 = (companyCode, payload = {}, auth = {}, token = "") =>
+export const submitTransferUD28 = (companyCode, payload = {}, auth = {}, token = "", APIKey) =>
 	client({
 		headers: { Authorization: `Bearer ${token}` },
-		url: `/v2/odata/${companyCode}/Ice.BO.UD28Svc/UD28s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
+		url: `/v2/odata/${companyCode}/Ice.BO.UD28Svc/UD28s?API-Key=${APIKey}`,
+		method: "post",
+		auth: auth,
+		data: payload,
+	})
+
+// Receive
+
+export const checkTransportSlip = (companyCode, companySiteID, QRCode, auth = {}, token = "") =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v1/BaqSvc/ADT_INVS_SINVS113_021('${companyCode}')?QRCode='${QRCode}'&Plant='${companySiteID}'`,
+		method: "get",
+		auth: auth,
+	})
+
+// export const submitReceive = (companyCode, payload = {}, auth = {}, token = "") =>
+// 	client({
+// 		headers: { Authorization: `Bearer ${token}` },
+// 		url: `/v2/odata/${companyCode}/Ice.BO.UD26Svc/UD26s?API-Key=EKdMPAW8VmHV2pt0EP1lNGBKiQgZgWZ6Eqi58ukdHSrcU`,
+// 		method: "post",
+// 		auth: auth,
+// 		data: payload,
+// 	})
+
+export const importImage = (companyCode, payload = {}, auth = {}, token = "", APIKey) =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v2/odata/${companyCode}/Erp.BO.ImageSvc/ImportImages?API-Key=${APIKey}`,
+		method: "post",
+		auth: auth,
+		data: payload,
+	})
+
+export const getDataReceiveTranferOnSite = (companyCode, Number14, Number15, auth = {}, token = "", APIKey) =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v2/odata/${companyCode}/Erp.BO.MiscShipSvc/MscShpDts('${companyCode}',${Number14},${Number15})?API-Key=${APIKey}`,
+		method: "get",
+		auth: auth,
+	})
+
+export const patchReceiveTranferOnSite = (companyCode, Number14, Number15, payload = {}, auth = {}, token = "", APIKey) =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v2/odata/${companyCode}/Erp.BO.MiscShipSvc/MscShpDts('${companyCode}',${Number14},${Number15})?API-Key=${APIKey}`,
+		method: "patch",
+		auth: auth,
+		data: payload,
+	})
+
+export const submitReceiveTranferOnSite = (companyCode, payload = {}, auth = {}, token = "", APIKey) =>
+	client({
+		headers: { Authorization: `Bearer ${token}` },
+		url: `/v2/odata/${companyCode}/Ice.BO.UD26Svc/UD26s?API-Key=${APIKey}`,
 		method: "post",
 		auth: auth,
 		data: payload,

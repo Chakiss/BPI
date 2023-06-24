@@ -41,6 +41,7 @@ export default {
 			state.username = null
 			state.password = null
 			state.token = null
+			localStorage.clear()
 		},
 	},
 	actions: {

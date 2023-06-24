@@ -53,23 +53,24 @@ export default {
 
 					console.log(`[sale order][done]`, item)
 
+					/*
 					const payload = {
 						id: item.RowIdent,
-						SO: item["UD28_Key2"] || null,
-						line: item["UD28_Key3"] || null,
-						rel: item["UD28_Key4"] || null,
-						productID: item["UD28_ShortChar08"] || null,
+						SO: item["UD28_ShortChar16"] || null,
+						line: item["UD28_ShortChar17"] || null,
+						rel: item["UD28_ShortChar18"] || null,
+						productID: item["UD28_Key2"] || null,
 						productAmount: parseFloat(item["UD28_Number04"] || 0),
 						productName: item["UD28_Character09"] || null,
 						UD28_Key5: item["UD28_Key5"] || null,
 						DefShipWhse: item["PlantConfCtrl_DefShipWhse"] || null,
 						DefShipBin: item["PlantConfCtrl_DefShipBin"] || null,
-						UD28_Key1: item["UD28_Key4"] || null,
+						UD28_Key1: item["UD28_Key1"] || null,
 					}
 
 					console.log(`[sale order][parsed]`, payload)
-
-					return resolve(payload)
+					*/
+					return resolve({ item: item })
 				} catch (error) {
 					console.log(`[sale order][error]`, error)
 					return reject(error)
@@ -182,9 +183,11 @@ export default {
 
 					const companyCode = rootGetters["company/selectedCompanyCode"] || ""
 					const companySiteID = rootGetters["company/selectedCompanySiteID"] || ""
+					const apiKey = rootGetters["company/apiKey"] || ""
+					console.log("apiKey", apiKey)
 					dispatch("showLoader", null, { root: true })
 
-					const response = await submitEpicor(companyCode, payload, rootGetters["auth/auth"], rootGetters["auth/token"])
+					const response = await submitEpicor(companyCode, payload, rootGetters["auth/auth"], rootGetters["auth/token"], apiKey)
 					console.log(response)
 
 					return resolve(true)
@@ -204,9 +207,11 @@ export default {
 
 					const companyCode = rootGetters["company/selectedCompanyCode"] || ""
 					const companySiteID = rootGetters["company/selectedCompanySiteID"] || ""
+					const apiKey = rootGetters["company/apiKey"] || ""
+					console.log("apiKey", apiKey)
 					dispatch("showLoader", null, { root: true })
 
-					const response = await submitEpicorUD03(companyCode, payload, rootGetters["auth/auth"], rootGetters["auth/token"])
+					const response = await submitEpicorUD03(companyCode, payload, rootGetters["auth/auth"], rootGetters["auth/token"], apiKey)
 					console.log(response)
 
 					return resolve(true)

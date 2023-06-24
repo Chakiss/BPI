@@ -46,7 +46,7 @@ const routes = [
 			{ path: "/profits", name: "profits" },
 			{ path: "/transfers", name: "transfers", component: () => import(/* webpackChunkName: "application.ships" */ "../views/App/Transfer.vue") },
 			{ path: "/ships", name: "ships", component: () => import(/* webpackChunkName: "application.ships" */ "../views/App/Ship.vue") },
-			{ path: "/recieveds", name: "recieveds" },
+			{ path: "/recieveds", name: "recieveds", component: () => import(/* webpackChunkName: "application.ships" */ "../views/App/Recieveds.vue") },
 		],
 	},
 ]

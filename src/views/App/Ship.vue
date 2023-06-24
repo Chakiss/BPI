@@ -127,6 +127,7 @@ export default {
 			defShipWhse: null,
 			defShipBin: null,
 			UD28_Key1: null,
+			item_UD28: null,
 		},
 	}),
 	methods: {
@@ -165,8 +166,8 @@ export default {
 						barcodePlan: this.form.barcodePlan,
 					}
 
+					/*
 					const { SO, line, rel, productID, productAmount, productName, UD28_Key5, DefShipWhse, DefShipBin, UD28_Key1 } = await this.$store.dispatch("ship/checkSaleOrderByQRCode", data)
-
 					this.form.saleOrderSO = SO
 					this.form.saleOrderLine = line
 					this.form.saleOrderRel = rel
@@ -177,6 +178,32 @@ export default {
 					this.form.defShipWhse = DefShipWhse
 					this.form.defShipBin = DefShipBin
 					this.form.UD28_Key1 = UD28_Key1
+
+					id: item.RowIdent,
+						SO: item["UD28_ShortChar16"] || null,
+						line: item["UD28_ShortChar17"] || null,
+						rel: item["UD28_ShortChar18"] || null,
+						productID: item["UD28_Key2"] || null,
+						productAmount: parseFloat(item["UD28_Number04"] || 0),
+						productName: item["UD28_Character09"] || null,
+						UD28_Key5: item["UD28_Key5"] || null,
+						DefShipWhse: item["PlantConfCtrl_DefShipWhse"] || null,
+						DefShipBin: item["PlantConfCtrl_DefShipBin"] || null,
+						UD28_Key1: item["UD28_Key1"] || null,
+					*/
+					const { item } = await this.$store.dispatch("ship/checkSaleOrderByQRCode", data)
+
+					this.form.saleOrderSO = item["UD28_ShortChar16"] || null
+					this.form.saleOrderLine = item["UD28_ShortChar17"] || null
+					this.form.saleOrderRel = item["UD28_ShortChar18"] || null
+					this.form.saleOrderProductID = item["UD28_Key2"] || null
+					this.form.saleOrderProductAmount = parseFloat(item["Calculated_Number04"] || 0)
+					this.form.saleOrderProductName = item["UD28_Character09"] || null
+					this.form.UD28_Key5 = item["UD28_Key5"] || null
+					this.form.defShipWhse = item["PlantConfCtrl_DefShipWhse"] || null
+					this.form.defShipBin = item["PlantConfCtrl_DefShipBin"] || null
+					this.form.UD28_Key1 = item["UD28_Key1"] || null
+					this.form.item_UD28 = item
 				} catch (error) {
 					this.resetSaleOrder()
 
@@ -221,6 +248,7 @@ export default {
 												foundObject.Key1Array.push(item.UD03_Key1)
 												foundObject.Key2Array.push(item.UD03_Key2)
 												foundObject.Key5Array.push(item.UD03_Key5)
+												foundObject.Qty = item.Calculated_Qty
 												this.form.partBin_DimCode = item.PartBin_DimCode
 											} else {
 												alert("ของในระบบมีไม่พอขาย กรุณาตรวจสอบ")
@@ -234,6 +262,7 @@ export default {
 												item.Key2Array.push(item.UD03_Key2)
 												item.Key5Array = []
 												item.Key5Array.push(item.UD03_Key5)
+												item.Qty = item.Calculated_Qty
 												this.form.products.push(item)
 												this.form.partBin_DimCode = item.PartBin_DimCode
 											} else {
@@ -278,24 +307,36 @@ export default {
 							Key1: this.form.UD28_Key1,
 							Key2: key2,
 							Key3: key5,
-							Key5: this.form.UD28_Key5,
+							Key4: key1, // UD03_Key1
+							Key5: this.form.item_UD28["UD28_ShortChar13"], //  UD28_ShortChar13
+							Character01: this.form.item_UD28["UD28_ShortChar06"], //  UD28.ShortChar06”
+							Character02: this.form.item_UD28["UD28_Character02"], //  UD28.Character02”
 							Character03: this.form.defShipWhse,
 							Character04: this.form.defShipBin,
+							Character05: this.form.item_UD28["UD28_Character05"], //  UD28_Character05
 							Character06: this.form.partBin_DimCode,
 							Character07: this.$store.getters["auth/username"],
 							Character08: this.$store.getters["auth/username"],
 							Character09: this.form.saleOrderProductName,
-							Character10: this.form.saleOrderSO,
-							Number02: parseInt(this.form.saleOrderLine),
-							Number03: parseInt(this.form.saleOrderRel),
-							Number04: parseInt(this.form.saleOrderProductAmount),
+							Character10: this.form.item_UD28["UD28_ShortChar16"], //  UD28_ShortChar16
+							Number02: parseInt(this.form.item_UD28["UD28_ShortChar17"]), //  UD28_ShortChar17
+							Number03: parseInt(this.form.item_UD28["UD28_ShortChar18"]), //  UD28_ShortChar18
+							Number04: parseInt(product.Qty), // xxx Calculated_Qty
+							Number09: parseInt(index + 1), // คือลำดับ Seq ใน Column Line (1,2,3,…)
+							Number10: parseInt(this.form.item_UD28["Calculated_Number04"]), //  “UD28_Number04” คือ จำนวนที่ต้องการส่ง
 							Number11: parseInt(product.Key2Array.length),
-							Number14: parseInt(index + 1),
-							ShortChar13: "",
-							ShortChar14: "",
+							ShortChar03: this.form.item_UD28["UD28_ShortChar03"], //  UD28.ShortChar03
+							ShortChar04: this.form.item_UD28["Calculated_CustID"], //  Calculated_CustID
+							ShortChar05: this.form.item_UD28["Calculated_ShipToNum"], //  Calculated_ShipToNum
+							ShortChar06: this.form.item_UD28["UD28_ShortChar06"], //  UD28.ShortChar06
+							ShortChar07: this.form.item_UD28["UD28_ShortChar07"], //  UD28.ShortChar07
+							ShortChar08: this.form.item_UD28["UD28_ShortChar04"], //  UD28.ShortChar04
+							ShortChar09: this.form.item_UD28["UD28_ShortChar05"], //  “UD28.ShortChar05
+							ShortChar13: this.form.item_UD28["UD28_Character03"] || "", // xx UD28_Character03” ถ้ามีค่า Null lส่งค่าว่างไป
+							ShortChar14: this.form.item_UD28["UD28_Character04"] || "", // xx UD28_Character04” ถ้ามีค่า Null lส่งค่าว่างไป
 							ShortChar20: this.$store.getters["company/selectedCompanySiteID"],
 						}
-
+						console.log("[PAYLOAD]", payload)
 						const response = await this.$store.dispatch("ship/submitEpicor", payload)
 
 						const payloadUD03 = {

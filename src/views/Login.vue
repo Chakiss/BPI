@@ -34,7 +34,9 @@ export default {
 					username: this.username,
 					password: this.password,
 				})
+				await this.$store.dispatch("company/getKey")
 				await this.$store.dispatch("company/getCompanies")
+
 				this.$router.go()
 			} catch (error) {
 				await this.$store.dispatch("auth/reset")

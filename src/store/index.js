@@ -6,6 +6,7 @@ import auth from "@/store/auth"
 import company from "@/store/company"
 import ship from "@/store/ship"
 import transfer from "@/store/transfer"
+import recieveds from "@/store/recieveds"
 
 const vuexLocal = new VuexPersistence({
 	storage: window.localStorage,
@@ -14,26 +15,30 @@ const vuexLocal = new VuexPersistence({
 Vue.use(Vuex)
 
 export default new Vuex.Store({
+	namespaced: true,
 	state: {
 		loader: false,
-		mainMenuItems: [
-			//{ icon: mdiCash100, title: "แผนตอกรายวัน", option: { name: "profits" }, disabled: true },
-			{ icon: mdiTransfer, title: "โอนเข็มรอขาย", option: { name: "transfers" }, disabled: false },
-			{ icon: mdiZipBoxOutline, title: "ส่งสินค้า", option: { name: "ships" }, disabled: false },
-			//{ icon: mdiHandshakeOutline, title: "รับของที่ Site งาน", option: { name: "recieveds" }, disabled: true },
-		],
+		mainMenuItems: [],
 	},
 	getters: {
 		loader(state) {
 			return state.loader
 		},
 		mainMenuItems(state) {
-			return state.mainMenuItems
+			return [
+				//{ icon: mdiCash100, title: "แผนตอกรายวัน", option: { name: "profits" }, disabled: true },
+				{ icon: mdiTransfer, title: "โอนเข็มรอขาย", option: { name: "transfers" }, disabled: false },
+				{ icon: mdiZipBoxOutline, title: "ส่งสินค้า", option: { name: "ships" }, disabled: false },
+				{ icon: mdiHandshakeOutline, title: "รับของที่ Site งาน", option: { name: "recieveds" }, disabled: false },
+			]
 		},
 	},
 	mutations: {
 		setLoader(state, value) {
 			state.loader = value
+		},
+		reset(state) {
+			state.mainMenuItems = []
 		},
 	},
 	actions: {
@@ -43,10 +48,10 @@ export default new Vuex.Store({
 		hideLoader: ({ commit }) => {
 			commit("setLoader", false)
 		},
-		reset({ dispatch }) {
-			state.mainMenuItems = []
+		clear({ commit }) {
+			commit("reset")
 		},
 	},
 	plugins: [vuexLocal.plugin],
-	modules: { company, ship, transfer, auth },
+	modules: { company, ship, transfer, recieveds, auth },
 })

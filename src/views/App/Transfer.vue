@@ -163,12 +163,6 @@ export default {
 				this.form.calculatedPickingList = picking[0]["UD28_Key1"]
 				this.form.calculatedWH = picking[0]["UD28_ShortChar14"]
 				this.form.calculatedBin = picking[0]["UD28_ShortChar15"]
-				// this.form.selectedDocument = picking[0]
-				// this.form.tmpselectedDocument = this.form.selectedDocument
-				// this.form.needTransferQty = parseInt(picking[0]["UD28_Number04"])
-				// this.form.productCode = picking[0]["UD28_ShortChar08"]
-				// this.form.productName = picking[0]["UD28_Character09"]
-				// picking[0]["OrderDtl_Life01_c"]
 			} catch (error) {
 				this.resetPlan()
 				alert(error.message)
@@ -237,7 +231,7 @@ export default {
 				this.form.selectedDocument = item
 				this.form.needTransferQty = parseInt(item.UD28_Number04)
 				this.form.tmpselectedDocument = item
-				this.form.productCode = item.UD28_ShortChar08
+				this.form.productCode = item.UD28_Key2
 				this.form.productName = item.UD28_Character09
 			}
 		},
@@ -271,7 +265,7 @@ export default {
 					if (item.UD24_Key1 !== null) {
 						console.log("item.UD24_Key5", item.UD24_Key5)
 						console.log("this.form.selectedDocument.UD28_ShortChar08", this.form.selectedDocument.UD28_ShortChar08)
-						if (item.UD24_Key5 === this.form.selectedDocument.UD28_ShortChar08) {
+						if (item.UD24_Key5 === this.form.selectedDocument.UD28_Key2) {
 							if (item.UD24_CheckBox01 == false) {
 								if (item.Calculated_P_Life >= this.form.selectedDocument.OrderDtl_Life01_c) {
 									console.log("item.Calculated_Qty", item.Calculated_Qty)
@@ -355,8 +349,8 @@ export default {
 						Character07: this.$store.getters["auth/username"],
 						Character08: this.$store.getters["auth/username"],
 						Character09: this.form.selectedDocument.UD28_Character09,
-						Number01: parseInt(this.form.selectedDocument.UD28_Key3),
-						Number02: parseInt(this.form.selectedDocument.UD28_Key4),
+						Number01: parseInt(this.form.selectedDocument.UD28_ShortChar17),
+						Number02: parseInt(this.form.selectedDocument.UD28_ShortChar18),
 						Number04: parseInt(product.Calculated_Qty),
 						Number10: index + 1,
 						Number14: this.form.selectedDocument.UD28_Number14,
@@ -365,8 +359,8 @@ export default {
 						Date03: this.form.transferDate,
 						ShortChar09: this.form.calculatedWH,
 						ShortChar10: this.form.calculatedBin,
-						ShortChar15: this.form.selectedDocument.UD28_Key5,
-						ShortChar16: this.form.selectedDocument.UD28_Key2,
+						ShortChar15: this.form.selectedDocument.UD28_ShortChar13,
+						ShortChar16: this.form.selectedDocument.UD28_ShortChar16,
 						ShortChar20: this.$store.getters["company/selectedCompanySiteID"],
 						CheckBox01: true,
 					}

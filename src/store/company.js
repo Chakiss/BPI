@@ -1,4 +1,4 @@
-import { getCompanies } from "@/libs/api"
+import { getCompanies, getKey } from "@/libs/api"
 
 export default {
 	namespaced: true,
@@ -7,6 +7,7 @@ export default {
 		selectedCompanyID: null,
 		selectedCompanySiteID: null,
 		isInitialized: false,
+		apiKey: null,
 	},
 	getters: {
 		companies(state) {
@@ -28,10 +29,16 @@ export default {
 		isInitialized(state) {
 			return state.isInitialized
 		},
+		apiKey(state) {
+			return state.apiKey
+		},
 	},
 	mutations: {
 		setCompany(state, items) {
 			state.companies = items
+		},
+		setKey(state, key) {
+			state.apiKey = key
 		},
 		setSelectedCompanyID(state, value) {
 			state.selectedCompanyID = value
@@ -47,6 +54,7 @@ export default {
 			state.companies = []
 			state.selectedCompanyID = null
 			state.selectedCompanySiteID = null
+			state.key = null
 		},
 	},
 	actions: {
@@ -74,6 +82,26 @@ export default {
 					dispatch("setInitialized", true)
 
 					return resolve(items)
+				} catch (error) {
+					return reject(error)
+				} finally {
+					dispatch("hideLoader", null, { root: true })
+				}
+			}),
+
+		getKey: ({ commit, rootGetters, dispatch }) =>
+			new Promise(async (resolve, reject) => {
+				try {
+					dispatch("showLoader", null, { root: true })
+					commit("reset")
+
+					const { value: result } = await getKey(rootGetters["auth/auth"])
+
+					const key = result[0].Calculated_Key
+					console.log("key", key)
+					commit("setKey", key)
+					dispatch("setInitialized", true)
+					return resolve(key)
 				} catch (error) {
 					return reject(error)
 				} finally {
