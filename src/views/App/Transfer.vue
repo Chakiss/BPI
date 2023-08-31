@@ -163,6 +163,7 @@ export default {
 				this.form.calculatedPickingList = picking[0]["UD28_Key1"]
 				this.form.calculatedWH = picking[0]["UD28_ShortChar14"]
 				this.form.calculatedBin = picking[0]["UD28_ShortChar15"]
+				this.resetProducts()
 			} catch (error) {
 				this.resetPlan()
 				alert(error.message)
@@ -312,7 +313,14 @@ export default {
 										}
 									}
 								} else {
-									alert("สินค้าอายุไม่ถึงวันที่กำหนด")
+									alert(
+										"โอนไม่ได้เนื่องจาก สินค้า Lot นี้มีอายุ" +
+											item.Calculated_P_Life +
+											"วัน" +
+											" สินค้าที่โอนได้ต้องมีอายุมากกว่า" +
+											this.form.selectedDocument.OrderDtl_Life01_c +
+											"วัน รบกวนตรวจสอบข้อมูล"
+									)
 								}
 							} else {
 								alert("แท๊กนี้ถูกโอนย้ายแล้ว")

@@ -61,7 +61,7 @@ v-container
 			v-row
 				v-col(cols="6" sm="6")
 					.text-caption.white--text จำนวนรับ:
-					v-text-field(v-model="form.recieveQty" type="number" :min= 1 :max=5 solo flat hide-details)
+					v-text-field(v-model="form.recieveQty" type="number" :min= 1 :max=5 solo flat hide-details readonly)
 				v-col(cols="6" sm="6")
 					.text-caption.white--text ท่อน:
 					v-text-field(v-model="form.sendUnit" type="text" solo flat hide-details readonly)
@@ -86,7 +86,7 @@ v-container
 		v-col(cols="12")
 			.text-caption.white--text รายการรับสินค้า:
 			v-sheet(width="100%" color="white").rounded-lg.overflow-hidden
-				v-simple-table
+				v-simple-table(:key="tableKey")
 					template(v-slot:default)
 						thead
 							tr
@@ -136,10 +136,12 @@ import SearchTable from "@/components/pickers/SearchTable.vue"
 import SearchBin from "@/components/pickers/SearchBin.vue"
 import Camera from "simple-vue-camera"
 import axios from "axios"
+import { mapActions } from "vuex"
 
 export default {
 	components: { DateField, BarcodeField, SearchTable, SearchBin, "simple-v-camera": Camera },
 	data: () => ({
+		tableKey: 0,
 		showSearhDialog: false,
 		showSearhBinDialog: false,
 		mdiCalendarMonthOutline: mdiCalendarMonthOutline,
@@ -185,7 +187,10 @@ export default {
 			products: [],
 		},
 	}),
+
 	methods: {
+		...mapActions(["showLoader", "hideLoader"]),
+
 		async transportSlipScanned(qrString) {
 			try {
 				const { slip } = await this.$store.dispatch("recieveds/checkTransportSlipBarcode", qrString)
@@ -211,7 +216,7 @@ export default {
 			this.form.lotNumber = this.form.selectedProduct["UD27_Key3"]
 			this.form.sendQty = this.form.selectedProduct["Calculated_Number11"]
 			this.form.sendUnit = this.form.selectedProduct["UD27_Character06"]
-			this.form.recieveQty = this.form.selectedProduct["recieveQty"] ? this.form.selectedProduct["recieveQty"] : 0
+			this.form.recieveQty = this.form.selectedProduct["Calculated_Number11"] //this.form.selectedProduct["recieveQty"] ? this.form.selectedProduct["recieveQty"] : 0
 		},
 
 		async handleSelectClose() {
@@ -259,7 +264,7 @@ export default {
 			// input(type="file" accept="image/*" @change="handleImage")
 			const input = document.createElement("input")
 			input.type = "file"
-			input.accept = "image/*"
+			input.accept = "image/*, video/*"
 			input.onchange = (e) => {
 				var files = e.target.files || e.dataTransfer.files
 				if (!files.length) return
@@ -305,16 +310,27 @@ export default {
 					FileDetails: this.form.products[index].imageFile,
 				},
 			}
-
+			this.showLoader()
 			axios
 				.post(url, formData, config)
 				.then((response) => {
 					this.form.products[index].imagesUrl.push(response.data.result.files[0].fileurl)
 					let indexxx = this.form.products[index].imagesUrl.indexOf(response.data.result.files[0].fileurl)
-					alert("Image " + (indexxx + 1) + " uploaded successfully")
+					alert("Image " + (indexxx + 1) + " uploaded successfully in path " + response.data.result.files[0].fileurl)
+					console.log(response.data.result.files[0].fileurl)
+
+					this.$nextTick(() => {
+						this.$set(this.form.products[index], "image", null) // Use $set to ensure reactivity
+						this.form.products[index].imageFile = null
+						this.forceRerenderTable()
+					})
+
+					this.hideLoader()
 				})
 				.catch((error) => {
 					console.error("Error uploading image:", error)
+
+					this.hideLoader()
 					throw error
 				})
 		},
@@ -392,12 +408,12 @@ export default {
 							Number15: parseInt(product.Calculated_Number15),
 							ShortChar09: product.UD27_Character03, //  “UD28.ShortChar05
 							ShortChar10: product.UD27_Character04,
-							ShortChar17: this.form.remark,
+							ShortChar17: this.form.remark || "",
 							ShortChar20: this.$store.getters["company/selectedCompanySiteID"],
 							//URL_Pic01: product.imageUrl,
 						}
 						for (var i = 0; i < 10; i++) {
-							payload["URL_Pic" + (i + 1).toString().padStart(2, "0")] = product.imagesUrl[i] ?? ""
+							payload["URL_Pic" + (i + 1).toString().padStart(2, "0") + "_c"] = product.imagesUrl[i] ?? ""
 						}
 
 						console.log("[PAYLOAD]", payload)
@@ -428,6 +444,7 @@ export default {
 					this.resetAll()
 				}
 			} catch (error) {
+				alert(error)
 				console.error(error)
 			}
 		},
@@ -469,6 +486,9 @@ export default {
 			this.resetProducts()
 			this.form.selectedDocument = null
 			//this.resetPlan()
+		},
+		forceRerenderTable() {
+			this.tableKey++
 		},
 	},
 	computed: {

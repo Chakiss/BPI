@@ -7,7 +7,6 @@ import company from "@/store/company"
 import ship from "@/store/ship"
 import transfer from "@/store/transfer"
 import recieveds from "@/store/recieveds"
-
 const vuexLocal = new VuexPersistence({
 	storage: window.localStorage,
 })
